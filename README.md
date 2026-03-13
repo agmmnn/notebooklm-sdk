@@ -27,8 +27,6 @@ Run the built-in login script:
 
 ```bash
 bun run login
-# or
-npm run login
 ```
 
 This opens a real browser for Google sign-in and generates a
@@ -47,7 +45,8 @@ const client = await NotebookLMClient.connect({
 Requires:
 
 ```bash
-npx playwright install chromium
+bun add -d playwright
+bunx playwright install chromium
 ```
 
 <details>
