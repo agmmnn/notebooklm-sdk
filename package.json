@@ -41,6 +41,9 @@
   "files": [
     "dist"
   ],
+  "bin": {
+    "notebooklm-sdk": "./dist/bin.js"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -51,7 +54,7 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
-    "login": "tsx examples/login.ts",
+    "login": "tsx src/bin.ts login",
     "prepublishOnly": "bun run test && bun run build"
   },
   "devDependencies": {

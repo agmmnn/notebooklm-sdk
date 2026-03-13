@@ -23,10 +23,19 @@ bun add notebooklm-sdk
 
 ### Quick Login (Recommended)
 
-Run the built-in login script:
+First, install playwright:
 
 ```bash
-bun run login
+bun add -d playwright
+bunx playwright install chromium
+```
+
+Then, authenticate using the CLI:
+
+```bash
+npx notebooklm-sdk login
+# or
+bun x notebooklm-sdk login
 ```
 
 This opens a real browser for Google sign-in and generates a
@@ -40,13 +49,6 @@ import { NotebookLMClient } from "notebooklm-sdk";
 const client = await NotebookLMClient.connect({
   cookiesFile: "./storage_state.json",
 });
-```
-
-Requires:
-
-```bash
-bun add -d playwright
-bunx playwright install chromium
 ```
 
 <details>
@@ -255,13 +257,10 @@ await client.settings.setOutputLanguage("ja");
 
 Runnable scripts are in [`examples/`](./examples).
 
-Requires `.env`:
+**Setup:**
 
-```
-NOTEBOOKLM_COOKIE=...
-```
-
-Run:
+1. `npm run login` to create `storage_state.json`.
+2. Run any example below.
 
 ```bash
 # for auto login
