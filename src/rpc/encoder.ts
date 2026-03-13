@@ -13,10 +13,7 @@ export function encodeRPCRequest(methodId: RPCMethodId, params: unknown[]): unkn
  * Build URL-encoded request body for batchexecute.
  * Format: f.req=<encoded>&at=<csrf>&
  */
-export function buildRequestBody(
-  rpcRequest: unknown,
-  csrfToken: string,
-): string {
+export function buildRequestBody(rpcRequest: unknown, csrfToken: string): string {
   const fReq = encodeURIComponent(JSON.stringify(rpcRequest));
   const at = encodeURIComponent(csrfToken);
   return `f.req=${fReq}&at=${at}&`;

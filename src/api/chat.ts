@@ -25,7 +25,8 @@ export class ChatAPI {
   async ask(notebookId: string, query: string, opts: AskOptions = {}): Promise<AskResult> {
     const sourceIds = opts.sourceIds ?? (await this.rpc.getSourceIds(notebookId));
     const conversationId = opts.conversationId ?? null;
-    const history = opts.history ?? (conversationId ? (this.conversationCache.get(conversationId) ?? []) : []);
+    const history =
+      opts.history ?? (conversationId ? (this.conversationCache.get(conversationId) ?? []) : []);
 
     // Build request payload
     const turns = history.map((t) => [t.query, t.answer]);
@@ -72,8 +73,8 @@ export class ChatAPI {
       let turnNum = 1;
       for (const turn of turnsData) {
         if (!Array.isArray(turn)) continue;
-        const query = typeof turn[0] === "string" ? turn[0] as string : "";
-        const answer = typeof turn[1] === "string" ? turn[1] as string : "";
+        const query = typeof turn[0] === "string" ? (turn[0] as string) : "";
+        const answer = typeof turn[1] === "string" ? (turn[1] as string) : "";
         turns.push({ query, answer, turnNumber: turnNum++ });
       }
     } catch {

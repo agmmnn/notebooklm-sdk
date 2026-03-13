@@ -23,8 +23,7 @@ export function loadCookiesFromFile(filePath: string): CookieMap {
     raw = readFileSync(filePath, "utf-8");
   } catch {
     throw new AuthError(
-      `Cookie file not found: ${filePath}\n` +
-        "Provide valid Playwright storage state JSON.",
+      `Cookie file not found: ${filePath}\n` + "Provide valid Playwright storage state JSON.",
     );
   }
   return extractCookiesFromStorageState(JSON.parse(raw));
@@ -119,16 +118,12 @@ export async function fetchTokens(
   });
 
   if (!response.ok) {
-    throw new AuthError(
-      `Failed to fetch NotebookLM page: HTTP ${response.status}`,
-    );
+    throw new AuthError(`Failed to fetch NotebookLM page: HTTP ${response.status}`);
   }
 
   const finalUrl = response.url;
   if (isGoogleAuthRedirect(finalUrl)) {
-    throw new AuthError(
-      `Redirected to login page: ${finalUrl}. Cookies may be expired.`,
-    );
+    throw new AuthError(`Redirected to login page: ${finalUrl}. Cookies may be expired.`);
   }
 
   const html = await response.text();

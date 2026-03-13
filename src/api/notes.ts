@@ -31,9 +31,9 @@ export class NotesAPI {
         for (const m of mapsData) {
           if (Array.isArray(m)) {
             mindMaps.push({
-              id: typeof m[0] === "string" ? m[0] as string : "",
-              title: typeof m[2] === "string" ? m[2] as string : null,
-              content: typeof m[1] === "string" ? m[1] as string : "",
+              id: typeof m[0] === "string" ? (m[0] as string) : "",
+              title: typeof m[2] === "string" ? (m[2] as string) : null,
+              content: typeof m[1] === "string" ? (m[1] as string) : "",
               createdAt:
                 Array.isArray(m[3]) && typeof m[3][0] === "number"
                   ? new Date((m[3][0] as number) * 1000)

@@ -12,9 +12,9 @@ describe.skipIf(!hasCookie)("Integration Tests (requires NOTEBOOKLM_COOKIE)", ()
   beforeAll(async () => {
     let opts = {};
     if (cookieVar?.trim().startsWith("{")) {
-       opts = { cookiesObject: JSON.parse(cookieVar) };
+      opts = { cookiesObject: JSON.parse(cookieVar) };
     } else {
-       opts = { cookies: cookieVar || "" };
+      opts = { cookies: cookieVar || "" };
     }
     // We instantiate the client using the cookie from the environment
     client = await NotebookLMClient.connect(opts);

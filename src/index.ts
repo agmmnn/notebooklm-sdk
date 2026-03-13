@@ -94,6 +94,13 @@ export { NotesAPI } from "./api/notes.js";
 export { SourcesAPI } from "./api/sources.js";
 
 // API option types
-export type { CreateAudioOptions, CreateVideoOptions, CreateQuizOptions, CreateInfographicOptions, CreateSlideDeckOptions, CreateReportOptions } from "./api/artifacts.js";
+export type {
+  CreateAudioOptions,
+  CreateVideoOptions,
+  CreateQuizOptions,
+  CreateInfographicOptions,
+  CreateSlideDeckOptions,
+  CreateReportOptions,
+} from "./api/artifacts.js";
 export type { AskOptions } from "./api/chat.js";
 export type { AddSourceOptions } from "./api/sources.js";

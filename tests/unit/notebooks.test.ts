@@ -5,10 +5,7 @@ import { RPCCore } from "../../src/rpc/core.js";
 import { NotebooksAPI } from "../../src/api/notebooks.js";
 
 function getFixture(filename: string): string {
-  return fs.readFileSync(
-    path.join(__dirname, `../fixtures/responses/${filename}`),
-    "utf-8"
-  );
+  return fs.readFileSync(path.join(__dirname, `../fixtures/responses/${filename}`), "utf-8");
 }
 
 describe("NotebooksAPI", () => {
@@ -22,7 +19,7 @@ describe("NotebooksAPI", () => {
       sessionId: "mock-session",
       csrfToken: "mock-csrf",
       cookieHeader: "mock-cookie",
-      cookies: {}
+      cookies: {},
     };
     const realCore = new RPCCore(auth);
     api = new NotebooksAPI(realCore);
@@ -65,8 +62,8 @@ describe("NotebooksAPI", () => {
   });
 
   it("rename() succeeds", async () => {
-    // rename mock might need the get response inside, but if we use notebooks_rename fixture 
-    // it will return rename data for both rename and get. The get step might fail to parse correctly 
+    // rename mock might need the get response inside, but if we use notebooks_rename fixture
+    // it will return rename data for both rename and get. The get step might fail to parse correctly
     // if the formats are different, but we'll see if it throws.
     mockFetchWithFixture("notebooks_rename");
     const nb = await api.rename("test-id", "New Title");

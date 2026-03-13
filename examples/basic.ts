@@ -35,7 +35,7 @@ async function main() {
     console.log(`Found ${notebooks.length} notebooks.`);
 
     // Display up to the first 5 notebooks
-    for (const nb of notebooks.slice(0, 5)) {
+    for (const nb of notebooks) {
       console.log(`- [${nb.id}] ${nb.title}`);
     }
 

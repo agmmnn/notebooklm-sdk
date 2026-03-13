@@ -10,12 +10,12 @@ import { RateLimitError, RPCError } from "../../../src/types/errors.js";
 
 describe("stripAntiXSSI", () => {
   it("removes )]}' prefix with Unix newline", () => {
-    const input = ")]}'\n{\"key\":\"value\"}";
+    const input = ')]}\'\n{"key":"value"}';
     expect(stripAntiXSSI(input)).toBe('{"key":"value"}');
   });
 
   it("removes )]}' prefix with Windows newline", () => {
-    const input = ")]}'\r\n{\"key\":\"value\"}";
+    const input = ')]}\'\r\n{"key":"value"}';
     expect(stripAntiXSSI(input)).toBe('{"key":"value"}');
   });
 

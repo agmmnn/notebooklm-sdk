@@ -133,15 +133,7 @@ export class ArtifactsAPI {
     const sourceIds = opts.sourceIds ?? (await this.rpc.getSourceIds(notebookId));
 
     const audioConfig = [format, null, length];
-    const params = [
-      notebookId,
-      sourceIds,
-      ArtifactTypeCode.AUDIO,
-      audioConfig,
-      null,
-      null,
-      [2],
-    ];
+    const params = [notebookId, sourceIds, ArtifactTypeCode.AUDIO, audioConfig, null, null, [2]];
 
     const result = await this.rpc.call(RPCMethod.CREATE_ARTIFACT, params, {
       sourcePath: `/notebook/${notebookId}`,
@@ -156,15 +148,7 @@ export class ArtifactsAPI {
     const sourceIds = opts.sourceIds ?? (await this.rpc.getSourceIds(notebookId));
 
     const videoConfig = [format, style];
-    const params = [
-      notebookId,
-      sourceIds,
-      ArtifactTypeCode.VIDEO,
-      videoConfig,
-      null,
-      null,
-      [2],
-    ];
+    const params = [notebookId, sourceIds, ArtifactTypeCode.VIDEO, videoConfig, null, null, [2]];
 
     const result = await this.rpc.call(RPCMethod.CREATE_ARTIFACT, params, {
       sourcePath: `/notebook/${notebookId}`,
@@ -180,15 +164,7 @@ export class ArtifactsAPI {
     const variant = 2; // QUIZ variant (1=flashcards, 2=quiz)
 
     const quizConfig = [variant, quantity, difficulty];
-    const params = [
-      notebookId,
-      sourceIds,
-      ArtifactTypeCode.QUIZ,
-      quizConfig,
-      null,
-      null,
-      [2],
-    ];
+    const params = [notebookId, sourceIds, ArtifactTypeCode.QUIZ, quizConfig, null, null, [2]];
 
     const result = await this.rpc.call(RPCMethod.CREATE_ARTIFACT, params, {
       sourcePath: `/notebook/${notebookId}`,
@@ -204,15 +180,7 @@ export class ArtifactsAPI {
     const variant = 1; // FLASHCARDS variant
 
     const config = [variant, quantity, difficulty];
-    const params = [
-      notebookId,
-      sourceIds,
-      ArtifactTypeCode.QUIZ,
-      config,
-      null,
-      null,
-      [2],
-    ];
+    const params = [notebookId, sourceIds, ArtifactTypeCode.QUIZ, config, null, null, [2]];
 
     const result = await this.rpc.call(RPCMethod.CREATE_ARTIFACT, params, {
       sourcePath: `/notebook/${notebookId}`,
@@ -221,22 +189,17 @@ export class ArtifactsAPI {
     return this._parseCreationResult(result, notebookId);
   }
 
-  async createInfographic(notebookId: string, opts: CreateInfographicOptions = {}): Promise<Artifact> {
+  async createInfographic(
+    notebookId: string,
+    opts: CreateInfographicOptions = {},
+  ): Promise<Artifact> {
     const orientation = opts.orientation ?? InfographicOrientation.LANDSCAPE;
     const detail = opts.detail ?? InfographicDetail.STANDARD;
     const style = opts.style ?? InfographicStyle.AUTO_SELECT;
     const sourceIds = opts.sourceIds ?? (await this.rpc.getSourceIds(notebookId));
 
     const config = [orientation, detail, style];
-    const params = [
-      notebookId,
-      sourceIds,
-      ArtifactTypeCode.INFOGRAPHIC,
-      config,
-      null,
-      null,
-      [2],
-    ];
+    const params = [notebookId, sourceIds, ArtifactTypeCode.INFOGRAPHIC, config, null, null, [2]];
 
     const result = await this.rpc.call(RPCMethod.CREATE_ARTIFACT, params, {
       sourcePath: `/notebook/${notebookId}`,
@@ -251,15 +214,7 @@ export class ArtifactsAPI {
     const sourceIds = opts.sourceIds ?? (await this.rpc.getSourceIds(notebookId));
 
     const config = [format, length];
-    const params = [
-      notebookId,
-      sourceIds,
-      ArtifactTypeCode.SLIDE_DECK,
-      config,
-      null,
-      null,
-      [2],
-    ];
+    const params = [notebookId, sourceIds, ArtifactTypeCode.SLIDE_DECK, config, null, null, [2]];
 
     const result = await this.rpc.call(RPCMethod.CREATE_ARTIFACT, params, {
       sourcePath: `/notebook/${notebookId}`,
@@ -270,21 +225,9 @@ export class ArtifactsAPI {
 
   async createReport(notebookId: string, opts: CreateReportOptions = {}): Promise<Artifact> {
     const sourceIds = opts.sourceIds ?? (await this.rpc.getSourceIds(notebookId));
-    const config = [
-      opts.title ?? null,
-      opts.description ?? null,
-      opts.prompt ?? null,
-    ];
+    const config = [opts.title ?? null, opts.description ?? null, opts.prompt ?? null];
 
-    const params = [
-      notebookId,
-      sourceIds,
-      ArtifactTypeCode.REPORT,
-      config,
-      null,
-      null,
-      [2],
-    ];
+    const params = [notebookId, sourceIds, ArtifactTypeCode.REPORT, config, null, null, [2]];
 
     const result = await this.rpc.call(RPCMethod.CREATE_ARTIFACT, params, {
       sourcePath: `/notebook/${notebookId}`,

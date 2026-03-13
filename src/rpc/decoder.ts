@@ -182,10 +182,11 @@ export function decodeResponse(rawResponse: string, rpcId: string, allowNull = f
         { methodId: rpcId, foundIds, rawResponse: responsePreview },
       );
     }
-    throw new RPCError(
-      `No result found for RPC ID: ${rpcId} (${chunks.length} chunks parsed)`,
-      { methodId: rpcId, foundIds, rawResponse: responsePreview },
-    );
+    throw new RPCError(`No result found for RPC ID: ${rpcId} (${chunks.length} chunks parsed)`, {
+      methodId: rpcId,
+      foundIds,
+      rawResponse: responsePreview,
+    });
   }
 
   return result ?? null;

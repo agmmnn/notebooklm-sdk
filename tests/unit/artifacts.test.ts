@@ -5,10 +5,7 @@ import { RPCCore } from "../../src/rpc/core.js";
 import { ArtifactsAPI } from "../../src/api/artifacts.js";
 
 function getFixture(filename: string): string {
-  return fs.readFileSync(
-    path.join(__dirname, `../fixtures/responses/${filename}`),
-    "utf-8"
-  );
+  return fs.readFileSync(path.join(__dirname, `../fixtures/responses/${filename}`), "utf-8");
 }
 
 describe("ArtifactsAPI", () => {
@@ -20,7 +17,7 @@ describe("ArtifactsAPI", () => {
       sessionId: "mock-session",
       csrfToken: "mock-csrf",
       cookieHeader: "mock-cookie",
-      cookies: {}
+      cookies: {},
     };
     const realCore = new RPCCore(auth);
     api = new ArtifactsAPI(realCore, auth);
@@ -65,7 +62,7 @@ describe("ArtifactsAPI", () => {
 
   // We explicitly provide sourceIds to avoid the internal getSourceIds call
   // which would require a multi-fetch mock setup for getNotebook -> createArtifact
-  
+
   it("createQuiz() generates a quiz", async () => {
     mockFetchWithFixture("artifacts_generate_quiz");
     const art = await api.createQuiz("nb-id", { sourceIds: ["src-id"] });
@@ -86,7 +83,7 @@ describe("ArtifactsAPI", () => {
 
   it("createMindMap() generates a mind map", async () => {
     // We use a generate fixture since createMindMap just invokes CREATE_ARTIFACT
-    mockFetchWithFixture("artifacts_generate_quiz"); 
+    mockFetchWithFixture("artifacts_generate_quiz");
     const art = await api.createMindMap("nb-id", ["src-id"]);
     expect(art).toHaveProperty("id");
   });

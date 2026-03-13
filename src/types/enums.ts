@@ -80,8 +80,7 @@ export const ArtifactStatusCode = {
   FAILED: 4,
 } as const;
 
-export type ArtifactStatusCodeValue =
-  (typeof ArtifactStatusCode)[keyof typeof ArtifactStatusCode];
+export type ArtifactStatusCodeValue = (typeof ArtifactStatusCode)[keyof typeof ArtifactStatusCode];
 
 // ---------------------------------------------------------------------------
 // Source status codes
@@ -285,10 +284,7 @@ export function sourceTypeFromCode(code: number | null | undefined): SourceType 
   return SOURCE_TYPE_MAP[code] ?? "unknown";
 }
 
-export function artifactTypeFromCode(
-  typeCode: number,
-  variant?: number | null,
-): ArtifactType {
+export function artifactTypeFromCode(typeCode: number, variant?: number | null): ArtifactType {
   // Quiz (4) and flashcards both use type 4, distinguished by variant
   if (typeCode === 4) {
     if (variant === 1) return "flashcards";

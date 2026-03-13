@@ -20,10 +20,7 @@ export class NetworkError extends NotebookLMError {
   readonly methodId?: string;
   readonly originalError?: Error;
 
-  constructor(
-    message: string,
-    opts: { methodId?: string; originalError?: Error } = {},
-  ) {
+  constructor(message: string, opts: { methodId?: string; originalError?: Error } = {}) {
     super(message);
     this.methodId = opts.methodId;
     this.originalError = opts.originalError;

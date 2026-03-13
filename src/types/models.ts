@@ -179,11 +179,7 @@ export function parseSource(src: Raw[]): Source {
   }
 
   let createdAt: Date | null = null;
-  if (
-    Array.isArray(src[2]) &&
-    Array.isArray(src[2][2]) &&
-    typeof src[2][2][0] === "number"
-  ) {
+  if (Array.isArray(src[2]) && Array.isArray(src[2][2]) && typeof src[2][2][0] === "number") {
     try {
       createdAt = new Date((src[2][2][0] as number) * 1000);
     } catch {

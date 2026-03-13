@@ -1,11 +1,18 @@
-import { AuthError, ClientError, NetworkError, RPCError, RPCTimeoutError, RateLimitError, ServerError } from "../types/errors.js";
+import {
+  AuthError,
+  ClientError,
+  NetworkError,
+  RPCError,
+  RPCTimeoutError,
+  RateLimitError,
+  ServerError,
+} from "../types/errors.js";
 import type { RPCMethodId } from "../types/enums.js";
 import type { AuthTokens } from "../auth.js";
 import { buildRequestBody, buildUrlParams, encodeRPCRequest } from "./encoder.js";
 import { decodeResponse } from "./decoder.js";
 
-const BATCHEXECUTE_URL =
-  "https://notebooklm.google.com/_/LabsTailwindUi/data/batchexecute";
+const BATCHEXECUTE_URL = "https://notebooklm.google.com/_/LabsTailwindUi/data/batchexecute";
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 

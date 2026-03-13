@@ -5,10 +5,7 @@ import { RPCCore } from "../../src/rpc/core.js";
 import { SourcesAPI } from "../../src/api/sources.js";
 
 function getFixture(filename: string): string {
-  return fs.readFileSync(
-    path.join(__dirname, `../fixtures/responses/${filename}`),
-    "utf-8"
-  );
+  return fs.readFileSync(path.join(__dirname, `../fixtures/responses/${filename}`), "utf-8");
 }
 
 describe("SourcesAPI", () => {
@@ -20,7 +17,7 @@ describe("SourcesAPI", () => {
       sessionId: "mock-session",
       csrfToken: "mock-csrf",
       cookieHeader: "mock-cookie",
-      cookies: {}
+      cookies: {},
     };
     const realCore = new RPCCore(auth);
     api = new SourcesAPI(realCore, auth);
@@ -67,20 +64,23 @@ describe("SourcesAPI", () => {
   });
 
   it("addFile() uploads a file", async () => {
-    // When addFileBuffer is called, it makes 2 fetch calls (init, upload) 
+    // When addFileBuffer is called, it makes 2 fetch calls (init, upload)
     // and 1 batchexecute call (ADD_SOURCE_FILE).
-    // We can mock fetch to return ok response with mock URL for the first two, 
+    // We can mock fetch to return ok response with mock URL for the first two,
     // and the fixture for the batchexecute.
     let callCount = 0;
     vi.mocked(fetch).mockImplementation(async (url) => {
       callCount++;
       if (callCount === 1) {
         // init upload
-        return new Response('ok', { status: 200, headers: new Headers({'x-goog-upload-url': 'http://mock-upload'}) });
+        return new Response("ok", {
+          status: 200,
+          headers: new Headers({ "x-goog-upload-url": "http://mock-upload" }),
+        });
       }
       if (callCount === 2) {
         // upload data
-        return new Response('http://mock-file-url', { status: 200 });
+        return new Response("http://mock-file-url", { status: 200 });
       }
       // batchexecute ADD_SOURCE_FILE
       const fixture = getFixture(`sources_add_file_1.txt`);

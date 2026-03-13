@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildCookieHeader,
-  loadCookiesFromString,
-  loadCookiesFromObject,
-} from "../../src/auth.js";
+import { buildCookieHeader, loadCookiesFromString, loadCookiesFromObject } from "../../src/auth.js";
 import { AuthError } from "../../src/types/errors.js";
 
 describe("loadCookiesFromString", () => {
@@ -44,9 +40,7 @@ describe("loadCookiesFromObject", () => {
 
   it("accepts regional Google domains", () => {
     const storage = {
-      cookies: [
-        { name: "SID", value: "sid_val", domain: ".google.co.uk" },
-      ],
+      cookies: [{ name: "SID", value: "sid_val", domain: ".google.co.uk" }],
     };
     const result = loadCookiesFromObject(storage);
     expect(result["SID"]).toBe("sid_val");
@@ -54,9 +48,7 @@ describe("loadCookiesFromObject", () => {
 
   it("throws AuthError when SID is missing", () => {
     const storage = {
-      cookies: [
-        { name: "HSID", value: "def", domain: ".google.com" },
-      ],
+      cookies: [{ name: "HSID", value: "def", domain: ".google.com" }],
     };
     expect(() => loadCookiesFromObject(storage)).toThrow(AuthError);
   });

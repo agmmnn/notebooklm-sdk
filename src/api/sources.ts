@@ -41,11 +41,7 @@ export class SourcesAPI {
     return sources.find((s) => s.id === sourceId) ?? null;
   }
 
-  async addUrl(
-    notebookId: string,
-    url: string,
-    opts: AddSourceOptions = {},
-  ): Promise<Source> {
+  async addUrl(notebookId: string, url: string, opts: AddSourceOptions = {}): Promise<Source> {
     const params = [notebookId, [[url]], null, null, [2]];
     const result = await this.rpc.call(RPCMethod.ADD_SOURCE, params, {
       sourcePath: `/notebook/${notebookId}`,
@@ -55,7 +51,15 @@ export class SourcesAPI {
     if (opts.waitUntilReady) {
       return this.waitUntilReady(notebookId, sourceId, opts.waitTimeout);
     }
-    return { id: sourceId, title: url, url, kind: "web_page", createdAt: null, status: "processing", _typeCode: null };
+    return {
+      id: sourceId,
+      title: url,
+      url,
+      kind: "web_page",
+      createdAt: null,
+      status: "processing",
+      _typeCode: null,
+    };
   }
 
   async addText(
@@ -74,7 +78,15 @@ export class SourcesAPI {
     if (opts.waitUntilReady) {
       return this.waitUntilReady(notebookId, sourceId, opts.waitTimeout);
     }
-    return { id: sourceId, title: title ?? null, url: null, kind: "pasted_text", createdAt: null, status: "processing", _typeCode: null };
+    return {
+      id: sourceId,
+      title: title ?? null,
+      url: null,
+      kind: "pasted_text",
+      createdAt: null,
+      status: "processing",
+      _typeCode: null,
+    };
   }
 
   async addFile(
@@ -108,7 +120,15 @@ export class SourcesAPI {
     if (opts.waitUntilReady) {
       return this.waitUntilReady(notebookId, sourceId, opts.waitTimeout);
     }
-    return { id: sourceId, title: fileName, url: null, kind: "pdf", createdAt: null, status: "processing", _typeCode: null };
+    return {
+      id: sourceId,
+      title: fileName,
+      url: null,
+      kind: "pdf",
+      createdAt: null,
+      status: "processing",
+      _typeCode: null,
+    };
   }
 
   private async uploadFile(
@@ -153,7 +173,7 @@ export class SourcesAPI {
         "Content-Type": mimeType,
         "Content-Length": String(data.length),
       },
-      body: data instanceof Buffer ? data.buffer as ArrayBuffer : data.buffer as ArrayBuffer,
+      body: data instanceof Buffer ? (data.buffer as ArrayBuffer) : (data.buffer as ArrayBuffer),
     });
 
     if (!uploadResp.ok) {
