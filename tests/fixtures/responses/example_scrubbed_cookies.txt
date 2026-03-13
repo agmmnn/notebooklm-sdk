@@ -1,0 +1,13 @@
+{
+  "args": {}, 
+  "data": "", 
+  "files": {}, 
+  "form": {
+    "test": "data"
+  }, 
+  "headers": {
+    "Accept": "*/*", 
+    "Accept-Encoding": "gzip, deflate", 
+    "Content-Length": "9", 
+    "Content-Type": "application/x-www-form-urlencoded", 
+    "Cookie": "SID=SCRUBBED; HSID=SCRUBBED

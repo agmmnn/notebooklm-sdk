@@ -1,0 +1,14 @@
+{
+  "args": {}, 
+  "data": "", 
+  "files": {}, 
+  "form": {
+    "at":"SCRUBBED_CSRF", 
+    "f.req": "[[[\"methodId\",null,null,[[[\"notebook_id\",\"data\"]]]]]]"
+  }, 
+  "headers": {
+    "Accept": "*/*", 
+    "Accept-Encoding": "gzip, deflate", 
+    "Content-Length": "78", 
+    "Content-Type": "application/x-www-form-urlencoded", 
+    "Cookie": "SID=SCRUBBED; HSID=SCRUBBED

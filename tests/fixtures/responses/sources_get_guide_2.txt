@@ -1,0 +1,6 @@
+)]}'
+
+1049
+[["wrb.fr","tr032e","[[[null,[\"This educational repository serves as a progressive tutorial designed to **demystify the architecture of AI coding agents** by teaching users how to build them from scratch. The project is structured into **five incremental versions**, starting with a minimal script and evolving into a sophisticated system that incorporates **structured planning, subagent delegation, and specialized domain skills**. Its central philosophy argues that modern agents succeed because the **underlying model is trained to act as an agent**, meaning developers should focus on providing effective tools rather than complex engineering. By examining the **core execution loop**, learners can explore how these systems use a simple cycle of model reasoning and tool implementation to solve complex programming tasks.\"],[[\"AI Coding Agents\",\"Agent Development Tutorials\",\"Claude Code\",\"Tool Use Loop\",\"Software Engineering Automation\"]],[]]]]",null,null,null,"generic"],["di",302],["af.httprm",302,"-6168837671717475514",10]]
+26
+[["e",4,null,null,1087]]
