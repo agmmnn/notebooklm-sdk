@@ -42,7 +42,8 @@
     "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
     "example:basic": "tsx examples/basic.ts",
-    "example:report": "tsx examples/report.ts"
+    "example:report": "tsx examples/report.ts",
+    "prepublishOnly": "bun run build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.7",
