@@ -64,7 +64,7 @@ describe("SourcesAPI", () => {
     expect(src).toHaveProperty("id");
   });
 
-    it("addFile() uploads a file", async () => {
+  it("addFile() uploads a file", async () => {
     // When addFileBuffer is called, it makes 3 calls:
     // 1) batchexecute ADD_SOURCE_FILE
     // 2) fetch POST to UPLOAD_URL to init

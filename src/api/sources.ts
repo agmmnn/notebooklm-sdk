@@ -125,7 +125,7 @@ export class SourcesAPI {
     notebookId: string,
     data: Buffer | Uint8Array,
     fileName: string,
-    mimeType: string,
+    _mimeType: string,
     opts: AddSourceOptions = {},
   ): Promise<Source> {
     // Step 1: Register file source intent to get SOURCE_ID
