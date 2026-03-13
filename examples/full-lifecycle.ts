@@ -51,7 +51,15 @@ async function main() {
     );
     console.log(`     Added source: ${urlSource.id}`);
 
-    // 3c. Upload a raw file buffer (e.g. creating a fake markdown file buffer in memory)
+    // 3c. Add a Website URL source
+    console.log("  -> Adding Website Source...");
+    const wikiSource = await client.sources.addUrl(
+      notebookId,
+      "https://en.wikipedia.org/wiki/NotebookLM",
+    );
+    console.log(`     Added source: ${wikiSource.id}`);
+
+    // 3d. Upload a raw file buffer (e.g. creating a fake markdown file buffer in memory)
     console.log("  -> Uploading File Source (Buffer)...");
     const fileContent = Buffer.from(
       "# Welcome to my test file\n\nThis is a temporary markdown file uploaded directly via a buffer.",
@@ -69,13 +77,14 @@ async function main() {
     await Promise.all([
       client.sources.waitUntilReady(notebookId, textSource.id),
       client.sources.waitUntilReady(notebookId, urlSource.id),
+      client.sources.waitUntilReady(notebookId, wikiSource.id),
       client.sources.waitUntilReady(notebookId, fileSource.id),
     ]);
     console.log("✅ All sources are processed and ready!");
 
     // 5. Ask a fast question directly using the chat API
     const question =
-      "Briefly summarize the biology fact and mention what the youtube video is about.";
+      "Briefly summarize the biology fact, mention what the youtube video is about, and outline what NotebookLM is based on the Wikipedia page.";
     console.log(`\n💬 Asking question: "${question}"`);
     const chatResult = await client.chat.ask(notebookId, question);
 

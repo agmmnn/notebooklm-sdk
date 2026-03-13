@@ -17,6 +17,7 @@ describe("SourcesAPI", () => {
       sessionId: "mock-session",
       csrfToken: "mock-csrf",
       cookieHeader: "mock-cookie",
+      googleCookieHeader: "mock-cookie",
       cookies: {},
     };
     const realCore = new RPCCore(auth);
@@ -63,28 +64,28 @@ describe("SourcesAPI", () => {
     expect(src).toHaveProperty("id");
   });
 
-  it("addFile() uploads a file", async () => {
-    // When addFileBuffer is called, it makes 2 fetch calls (init, upload)
-    // and 1 batchexecute call (ADD_SOURCE_FILE).
-    // We can mock fetch to return ok response with mock URL for the first two,
-    // and the fixture for the batchexecute.
+    it("addFile() uploads a file", async () => {
+    // When addFileBuffer is called, it makes 3 calls:
+    // 1) batchexecute ADD_SOURCE_FILE
+    // 2) fetch POST to UPLOAD_URL to init
+    // 3) fetch POST to stream bits
     let callCount = 0;
-    vi.mocked(fetch).mockImplementation(async (url) => {
+    vi.mocked(fetch).mockImplementation(async (_url) => {
       callCount++;
       if (callCount === 1) {
+        // batchexecute ADD_SOURCE_FILE intent
+        const fixture = getFixture(`sources_add_file_1.txt`);
+        return new Response(fixture, { status: 200 });
+      }
+      if (callCount === 2) {
         // init upload
         return new Response("ok", {
           status: 200,
           headers: new Headers({ "x-goog-upload-url": "http://mock-upload" }),
         });
       }
-      if (callCount === 2) {
-        // upload data
-        return new Response("http://mock-file-url", { status: 200 });
-      }
-      // batchexecute ADD_SOURCE_FILE
-      const fixture = getFixture(`sources_add_file_1.txt`);
-      return new Response(fixture, { status: 200 });
+      // upload data
+      return new Response("http://mock-file-url", { status: 200 });
     });
 
     const buf = Buffer.from("hello world");
