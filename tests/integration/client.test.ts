@@ -2,17 +2,22 @@ import { describe, expect, it, beforeAll } from "vitest";
 import { NotebookLMClient } from "../../src/index.js";
 
 // Check for required environment variables
-const hasCookie = !!process.env.NOTEBOOKLM_COOKIE;
+const cookieVar = process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
+const hasCookie = !!cookieVar;
 
 // Skip the entire test suite if NOTEBOOKLM_COOKIE is missing
 describe.skipIf(!hasCookie)("Integration Tests (requires NOTEBOOKLM_COOKIE)", () => {
   let client: NotebookLMClient;
 
   beforeAll(async () => {
+    let opts = {};
+    if (cookieVar?.trim().startsWith("{")) {
+       opts = { cookiesObject: JSON.parse(cookieVar) };
+    } else {
+       opts = { cookies: cookieVar || "" };
+    }
     // We instantiate the client using the cookie from the environment
-    client = new NotebookLMClient({
-      cookie: process.env.NOTEBOOKLM_COOKIE || ""
-    });
+    client = await NotebookLMClient.connect(opts);
   });
 
   it("should be able to list notebooks", async () => {
