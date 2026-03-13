@@ -42,9 +42,29 @@ export class SourcesAPI {
   }
 
   async addUrl(notebookId: string, url: string, opts: AddSourceOptions = {}): Promise<Source> {
-    const params = [notebookId, [[url]], null, null, [2]];
+    const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+    
+    let params: unknown[];
+    if (isYouTube) {
+      params = [
+        [[null, null, null, null, null, null, null, [url], null, null, 1]],
+        notebookId,
+        [2],
+        [1, null, null, null, null, null, null, null, null, null, [1]],
+      ];
+    } else {
+      params = [
+        [[null, null, [url], null, null, null, null, null]],
+        notebookId,
+        [2],
+        null,
+        null,
+      ];
+    }
+
     const result = await this.rpc.call(RPCMethod.ADD_SOURCE, params, {
       sourcePath: `/notebook/${notebookId}`,
+      allowNull: isYouTube,
     });
 
     const sourceId = extractSourceId(result);
@@ -69,7 +89,14 @@ export class SourcesAPI {
     opts: AddSourceOptions = {},
   ): Promise<Source> {
     // Pasted text uses ADD_SOURCE with a special format
-    const params = [notebookId, null, [[null, null, null, text, title ?? null]], null, [2]];
+    const params = [
+      [[null, [title ?? "", text], null, null, null, null, null, null]],
+      notebookId,
+      [2],
+      null,
+      null,
+    ];
+
     const result = await this.rpc.call(RPCMethod.ADD_SOURCE, params, {
       sourcePath: `/notebook/${notebookId}`,
     });
@@ -107,73 +134,96 @@ export class SourcesAPI {
     mimeType: string,
     opts: AddSourceOptions = {},
   ): Promise<Source> {
-    // Step 1: Upload file
-    const uploadUrl = await this.uploadFile(notebookId, data, fileName, mimeType);
+    // Step 1: Register file source intent to get SOURCE_ID
+    const params = [
+      [[fileName]],
+      notebookId,
+      [2],
+      [1, null, null, null, null, null, null, null, null, null, [1]],
+    ];
 
-    // Step 2: Register as source
-    const params = [notebookId, null, null, [[uploadUrl, fileName, mimeType]], [2]];
     const result = await this.rpc.call(RPCMethod.ADD_SOURCE_FILE, params, {
       sourcePath: `/notebook/${notebookId}`,
+      allowNull: true,
     });
 
     const sourceId = extractSourceId(result);
+
+    // Step 2: Start resumable upload session
+    const uploadUrl = await this.startResumableUpload(notebookId, fileName, data.length, sourceId);
+
+    // Step 3: Stream/upload final file content
+    await this.uploadFile(uploadUrl, data);
+
     if (opts.waitUntilReady) {
       return this.waitUntilReady(notebookId, sourceId, opts.waitTimeout);
     }
+
     return {
       id: sourceId,
       title: fileName,
       url: null,
-      kind: "pdf",
+      kind: "pdf", // Defaults to generic kind until ready
       createdAt: null,
       status: "processing",
       _typeCode: null,
     };
   }
 
-  private async uploadFile(
+  private async startResumableUpload(
     notebookId: string,
-    data: Buffer | Uint8Array,
     fileName: string,
-    mimeType: string,
+    fileSize: number,
+    sourceId: string,
   ): Promise<string> {
-    const params = new URLSearchParams({
-      "source-path": `/notebook/${notebookId}`,
-      upload_id: `${Date.now()}`,
-      upload_protocol: "resumable",
-    });
-
-    // Initiate resumable upload
-    const initResp = await fetch(`${UPLOAD_URL}?${params}`, {
+    const startResp = await fetch(`${UPLOAD_URL}?authuser=0`, {
       method: "POST",
       headers: {
+        Accept: "*/*",
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         Cookie: this.auth.cookieHeader,
-        "X-Goog-Upload-Command": "start",
-        "X-Goog-Upload-Header-Content-Length": String(data.length),
-        "X-Goog-Upload-Header-Content-Type": mimeType,
-        "X-Upload-Content-Type": mimeType,
-        "Content-Type": "application/json",
+        Origin: "https://notebooklm.google.com",
+        Referer: "https://notebooklm.google.com/",
+        "x-goog-authuser": "0",
+        "x-goog-upload-command": "start",
+        "x-goog-upload-header-content-length": String(fileSize),
+        "x-goog-upload-protocol": "resumable",
       },
-      body: JSON.stringify({ title: fileName }),
+      body: JSON.stringify({
+        PROJECT_ID: notebookId,
+        SOURCE_NAME: fileName,
+        SOURCE_ID: sourceId,
+      }),
     });
 
-    if (!initResp.ok) {
-      throw new Error(`Upload initiation failed: HTTP ${initResp.status}`);
+    if (!startResp.ok) {
+      throw new Error(`Upload initiation failed: HTTP ${startResp.status}`);
     }
 
-    const uploadSessionUrl = initResp.headers.get("x-goog-upload-url") ?? `${UPLOAD_URL}?${params}`;
+    const uploadSessionUrl = startResp.headers.get("x-goog-upload-url");
+    if (!uploadSessionUrl) {
+      throw new Error("Failed to get upload URL from response headers");
+    }
 
-    // Upload the file data
-    const uploadResp = await fetch(uploadSessionUrl, {
+    return uploadSessionUrl;
+  }
+
+  private async uploadFile(
+    uploadUrl: string,
+    data: Buffer | Uint8Array,
+  ): Promise<string> {
+    const uploadResp = await fetch(uploadUrl, {
       method: "POST",
       headers: {
+        Accept: "*/*",
+        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
         Cookie: this.auth.cookieHeader,
+        Origin: "https://notebooklm.google.com",
+        Referer: "https://notebooklm.google.com/",
         "X-Goog-Upload-Command": "upload, finalize",
         "X-Goog-Upload-Offset": "0",
-        "Content-Type": mimeType,
-        "Content-Length": String(data.length),
       },
-      body: data instanceof Buffer ? (data.buffer as ArrayBuffer) : (data.buffer as ArrayBuffer),
+      body: new Uint8Array(data),
     });
 
     if (!uploadResp.ok) {
@@ -181,7 +231,6 @@ export class SourcesAPI {
     }
 
     const uploadResult = await uploadResp.text();
-    // The response contains the file URL
     return uploadResult.trim();
   }
 
@@ -236,28 +285,26 @@ export class SourcesAPI {
 function extractSourceId(result: unknown): string {
   // Source ID appears in various positions depending on the RPC
   if (Array.isArray(result)) {
-    // Try result[0][0][0] or result[0][0][0][0] pattern
-    try {
-      const v0 = result[0];
-      if (Array.isArray(v0)) {
-        const v00 = v0[0];
-        if (Array.isArray(v00)) {
-          const v000 = v00[0];
-          if (Array.isArray(v000) && typeof v000[0] === "string") return v000[0];
-          if (typeof v000 === "string") return v000;
+    // Navigate down the first elements to find the deeply nested ID
+    // e.g., [[[[["id"], ...]]]], [[["id", title]]]
+    let current: unknown = result;
+    while (Array.isArray(current) && current.length > 0) {
+      if (typeof current[0] === "string") {
+        // Only return if it's a UUID-like string or long enough
+        if (current[0].length > 8) {
+          return current[0];
         }
-        if (typeof v00 === "string") return v00;
       }
-      if (typeof v0 === "string") return v0;
-    } catch {
-      // ignore
+      current = current[0];
     }
-    // Flat string in result
-    for (const item of result as unknown[]) {
+
+    // Fallback flat search
+    for (const item of result) {
       if (typeof item === "string" && item.length > 8) return item;
     }
   }
   if (typeof result === "string") return result;
+  console.log("extractSourceId debug info: could not parse:", JSON.stringify(result, null, 2));
   throw new Error("Could not extract source ID from API response");
 }
 

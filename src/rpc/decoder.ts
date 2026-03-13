@@ -144,6 +144,9 @@ export function extractRPCResult(chunks: unknown[][], rpcId: string): unknown {
             return resultData;
           }
         }
+        if (resultData === null) {
+          console.log("decodeResponse debug info: resultData is exactly null. Full item Array:", JSON.stringify(item));
+        }
         return resultData;
       }
     }

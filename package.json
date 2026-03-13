@@ -1,7 +1,7 @@
 {
   "name": "notebooklm-sdk",
   "version": "0.1.2",
-  "description": "TypeScript SDK for NotebookLM.",
+  "description": "TypeScript SDK for NotebookLM API.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -41,8 +41,6 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
-    "example:basic": "tsx examples/basic.ts",
-    "example:report": "tsx examples/report.ts",
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {

@@ -40,9 +40,9 @@ const client = await NotebookLMClient.connect({
 ```typescript
 const notebooks = await client.notebooks.list();
 const nb = await client.notebooks.get(notebookId);
-const { notebookId } = await client.notebooks.create("My Notebook");
-await client.notebooks.rename(notebookId, "New Title");
-await client.notebooks.delete(notebookId);
+const { id: newNbId } = await client.notebooks.create("My Notebook");
+await client.notebooks.rename(newNbId, "New Title");
+await client.notebooks.delete(newNbId);
 
 const summary = await client.notebooks.getSummary(notebookId);
 const description = await client.notebooks.getDescription(notebookId);
@@ -195,6 +195,8 @@ Runnable scripts in [`examples/`](./examples). Requires `.env` with `NOTEBOOKLM_
 | `download.ts` | Download all completed artifacts (audio, video, reports, quiz, flashcards) |
 | `chat.ts` | Ask questions and follow up |
 | `research.ts` | Start a web research session and import sources |
+| `research-and-chat.ts` | Complete workflow: create notebook, research, import sources, and chat |
+| `full-lifecycle.ts` | Create/rename notebook, upload files/urls/text, chat, and delete |
 | `settings.ts` | Check output language and sharing status |
 
 ```bash
