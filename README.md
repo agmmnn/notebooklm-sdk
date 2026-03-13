@@ -143,6 +143,24 @@ await client.notes.update(notebookId, noteId, "Updated content.");
 await client.notes.delete(notebookId, noteId);
 ```
 
+### Research
+
+```typescript
+// Start a fast web search or deep research
+const task = await client.research.start(notebookId, "Latest advances in quantum computing", "web", "deep");
+
+// Poll for results
+const result = await client.research.poll(notebookId);
+
+if (result.status === "completed") {
+  console.log(result.summary);
+  console.log(`Found ${result.sources.length} sources.`);
+  
+  // Import desired sources into the notebook
+  await client.research.importSources(notebookId, result.taskId, result.sources.slice(0, 2));
+}
+```
+
 ### Sharing
 
 ```typescript
@@ -176,6 +194,7 @@ Runnable scripts in [`examples/`](./examples). Requires `.env` with `NOTEBOOKLM_
 | `audio.ts` | Generate a podcast (long wait) |
 | `download.ts` | Download all completed artifacts (audio, video, reports, quiz, flashcards) |
 | `chat.ts` | Ask questions and follow up |
+| `research.ts` | Start a web research session and import sources |
 | `settings.ts` | Check output language and sharing status |
 
 ```bash
