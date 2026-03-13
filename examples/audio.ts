@@ -47,7 +47,12 @@ async function main() {
     console.log(`✅ Audio generation started. Artifact ID: ${audioTask.artifactId}`);
     console.log("⏳ Waiting for podcast to finish generating (this may take several minutes)...");
 
-    const completedAudio = await client.artifacts.waitUntilReady(nb.id, audioTask.artifactId, 600, 5);
+    const completedAudio = await client.artifacts.waitUntilReady(
+      nb.id,
+      audioTask.artifactId,
+      600,
+      5,
+    );
     console.log(`🎉 Podcast generation status: ${completedAudio.status}`);
 
     if (!completedAudio.audioUrl) {

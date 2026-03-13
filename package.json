@@ -45,12 +45,12 @@
     "example:report": "tsx examples/report.ts"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.6",
+    "@biomejs/biome": "^2.4.7",
     "@types/node": "^25.5.0",
     "@vitest/coverage-v8": "4.1.0",
     "dotenv-cli": "^11.0.0",
     "tsup": "^8.5.1",
-    "tsx": "^4.19.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   },

@@ -47,7 +47,12 @@ async function main() {
     );
 
     // Poll until complete
-    const completedReport = await client.artifacts.waitUntilReady(nb.id, reportTask.artifactId!, 600, 3);
+    const completedReport = await client.artifacts.waitUntilReady(
+      nb.id,
+      reportTask.artifactId!,
+      600,
+      3,
+    );
 
     console.log(`🎉 Report generation status: ${completedReport.status}`);
 
@@ -60,7 +65,9 @@ async function main() {
       await fs.writeFile(filename, markdownContent);
       console.log(`📁 Report saved to ${filename} (${markdownContent.length} chars)`);
     } else {
-      console.log("⚠️ No content found in artifact — it may still be processing or content is stored elsewhere.");
+      console.log(
+        "⚠️ No content found in artifact — it may still be processing or content is stored elsewhere.",
+      );
     }
   } catch (error) {
     console.error("\n❌ Error connecting, generating, or fetching data:");

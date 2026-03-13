@@ -99,6 +99,7 @@ export { ArtifactsAPI } from "./api/artifacts.js";
 export { ChatAPI } from "./api/chat.js";
 export { NotebooksAPI } from "./api/notebooks.js";
 export { NotesAPI } from "./api/notes.js";
+export { ResearchAPI } from "./api/research.js";
 export { SettingsAPI } from "./api/settings.js";
 export { SharingAPI } from "./api/sharing.js";
 export { SourcesAPI } from "./api/sources.js";
@@ -113,4 +114,10 @@ export type {
   CreateReportOptions,
 } from "./api/artifacts.js";
 export type { AskOptions } from "./api/chat.js";
+export type {
+  ResearchTask,
+  ResearchResult,
+  ResearchSource,
+  ImportedSource,
+} from "./api/research.js";
 export type { AddSourceOptions } from "./api/sources.js";

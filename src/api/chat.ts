@@ -93,7 +93,10 @@ export class ChatAPI {
     return { answer, conversationId: finalConvId, turnNumber, references };
   }
 
-  async getConversationTurns(notebookId: string, conversationId: string): Promise<ConversationTurn[]> {
+  async getConversationTurns(
+    notebookId: string,
+    conversationId: string,
+  ): Promise<ConversationTurn[]> {
     // params: [[], null, null, conversation_id, limit]
     const params = [[], null, null, conversationId, 100];
     const result = await this.rpc.call(RPCMethod.GET_CONVERSATION_TURNS, params, {
@@ -110,13 +113,20 @@ export class ChatAPI {
     let i = 0;
     while (i < rawTurns.length) {
       const turn = rawTurns[i];
-      if (!Array.isArray(turn) || turn.length < 3) { i++; continue; }
+      if (!Array.isArray(turn) || turn.length < 3) {
+        i++;
+        continue;
+      }
       if (turn[2] === 1 && turn.length > 3) {
         const q = typeof turn[3] === "string" ? (turn[3] as string) : "";
         let a = "";
         const next = rawTurns[i + 1];
         if (Array.isArray(next) && next.length > 4 && next[2] === 2) {
-          try { a = String(((next[4] as unknown[][])[0] as unknown[])[0] ?? ""); } catch { /* ignore */ }
+          try {
+            a = String(((next[4] as unknown[][])[0] as unknown[])[0] ?? "");
+          } catch {
+            /* ignore */
+          }
           i++;
         }
         turns.push({ query: q, answer: a, turnNumber: turns.length + 1 });
@@ -139,7 +149,7 @@ export class ChatAPI {
       if (!Array.isArray(group)) continue;
       for (const conv of group as unknown[]) {
         if (Array.isArray(conv) && typeof (conv as unknown[])[0] === "string") {
-          return ((conv as unknown[])[0] as string);
+          return (conv as unknown[])[0] as string;
         }
       }
     }
@@ -188,7 +198,11 @@ function parseStreamingResponse(rawText: string): ParsedResponse {
 
   function processChunk(jsonStr: string): void {
     let data: unknown;
-    try { data = JSON.parse(jsonStr); } catch { return; }
+    try {
+      data = JSON.parse(jsonStr);
+    } catch {
+      return;
+    }
     if (!Array.isArray(data)) return;
 
     for (const item of data as unknown[]) {
@@ -197,7 +211,11 @@ function parseStreamingResponse(rawText: string): ParsedResponse {
       if (typeof innerJson !== "string") continue;
 
       let innerData: unknown;
-      try { innerData = JSON.parse(innerJson); } catch { continue; }
+      try {
+        innerData = JSON.parse(innerJson);
+      } catch {
+        continue;
+      }
       if (!Array.isArray(innerData) || !innerData.length) continue;
 
       const first = (innerData as unknown[])[0];
@@ -208,9 +226,7 @@ function parseStreamingResponse(rawText: string): ParsedResponse {
 
       const typeInfo = (first as unknown[])[4];
       const isAnswer =
-        Array.isArray(typeInfo) &&
-        typeInfo.length > 0 &&
-        typeInfo[typeInfo.length - 1] === 1;
+        Array.isArray(typeInfo) && typeInfo.length > 0 && typeInfo[typeInfo.length - 1] === 1;
 
       const convData = (first as unknown[])[2];
       if (
@@ -246,7 +262,10 @@ function parseStreamingResponse(rawText: string): ParsedResponse {
   let i = 0;
   while (i < lines.length) {
     const line = (lines[i] ?? "").trim();
-    if (!line) { i++; continue; }
+    if (!line) {
+      i++;
+      continue;
+    }
     if (/^\d+$/.test(line)) {
       i++;
       const next = lines[i];

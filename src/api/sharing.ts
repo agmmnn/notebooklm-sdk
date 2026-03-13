@@ -1,5 +1,9 @@
 import { RPCMethod, ShareAccess, SharePermission, ShareViewLevel } from "../types/enums.js";
-import type { ShareAccessValue, SharePermissionValue, ShareViewLevelValue } from "../types/enums.js";
+import type {
+  ShareAccessValue,
+  SharePermissionValue,
+  ShareViewLevelValue,
+} from "../types/enums.js";
 import type { SharedUser, ShareStatus } from "../types/models.js";
 import type { RPCCore } from "../rpc/core.js";
 
@@ -21,12 +25,7 @@ export class SharingAPI {
   /** Enable or disable public link sharing. Returns updated status. */
   async setPublic(notebookId: string, isPublic: boolean): Promise<ShareStatus> {
     const access = isPublic ? ShareAccess.ANYONE_WITH_LINK : ShareAccess.RESTRICTED;
-    const params = [
-      [[notebookId, null, [access], [access, ""]]],
-      1,
-      null,
-      [2],
-    ];
+    const params = [[[notebookId, null, [access], [access, ""]]], 1, null, [2]];
     await this.rpc.call(RPCMethod.SHARE_NOTEBOOK, params, {
       sourcePath: `/notebook/${notebookId}`,
       allowNull: true,
@@ -39,10 +38,7 @@ export class SharingAPI {
    * Note: GET_SHARE_STATUS doesn't return view_level, so it's inferred from what was set.
    */
   async setViewLevel(notebookId: string, level: ShareViewLevelValue): Promise<ShareStatus> {
-    const params = [
-      notebookId,
-      [[null, null, null, null, null, null, null, null, [[level]]]],
-    ];
+    const params = [notebookId, [[null, null, null, null, null, null, null, null, [[level]]]]];
     await this.rpc.call(RPCMethod.RENAME_NOTEBOOK, params, {
       sourcePath: `/notebook/${notebookId}`,
       allowNull: true,

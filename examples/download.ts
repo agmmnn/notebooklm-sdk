@@ -44,7 +44,9 @@ async function main() {
   // Print summary table
   for (const a of artifacts) {
     const downloadable = isDownloadable(a) ? "⬇️ " : "   ";
-    console.log(`  ${downloadable}[${a.kind.padEnd(12)}] ${a.status.padEnd(12)} ${a.id}  ${a.title ?? ""}`);
+    console.log(
+      `  ${downloadable}[${a.kind.padEnd(12)}] ${a.status.padEnd(12)} ${a.id}  ${a.title ?? ""}`,
+    );
   }
   console.log();
 
@@ -77,10 +79,20 @@ async function main() {
 
 function isDownloadable(a: Artifact): boolean {
   if (a.status !== "completed") return false;
-  return a.kind === "audio" || a.kind === "video" || a.kind === "report" || a.kind === "quiz" || a.kind === "flashcards";
+  return (
+    a.kind === "audio" ||
+    a.kind === "video" ||
+    a.kind === "report" ||
+    a.kind === "quiz" ||
+    a.kind === "flashcards"
+  );
 }
 
-async function downloadAudio(client: Awaited<ReturnType<typeof NotebookLMClient.connect>>, a: Artifact, dir: string) {
+async function downloadAudio(
+  client: Awaited<ReturnType<typeof NotebookLMClient.connect>>,
+  a: Artifact,
+  dir: string,
+) {
   if (!a.audioUrl) {
     console.log(`  ⚠️  audio ${a.id} — no URL available`);
     return;
@@ -93,7 +105,11 @@ async function downloadAudio(client: Awaited<ReturnType<typeof NotebookLMClient.
   console.log(`     ✅ Saved (${sizeMB} MB)`);
 }
 
-async function downloadVideo(client: Awaited<ReturnType<typeof NotebookLMClient.connect>>, a: Artifact, dir: string) {
+async function downloadVideo(
+  client: Awaited<ReturnType<typeof NotebookLMClient.connect>>,
+  a: Artifact,
+  dir: string,
+) {
   if (!a.videoUrl) {
     console.log(`  ⚠️  video ${a.id} — no URL available`);
     return;
@@ -106,7 +122,11 @@ async function downloadVideo(client: Awaited<ReturnType<typeof NotebookLMClient.
   console.log(`     ✅ Saved (${sizeMB} MB)`);
 }
 
-async function downloadReport(client: Awaited<ReturnType<typeof NotebookLMClient.connect>>, a: Artifact, dir: string) {
+async function downloadReport(
+  client: Awaited<ReturnType<typeof NotebookLMClient.connect>>,
+  a: Artifact,
+  dir: string,
+) {
   const filepath = path.join(dir, `${a.id}.md`);
   console.log(`  📄 Downloading report → downloads/${a.id}.md`);
   const content = await client.artifacts.getReportMarkdown(a.notebookId, a.id);
@@ -118,7 +138,11 @@ async function downloadReport(client: Awaited<ReturnType<typeof NotebookLMClient
   console.log(`     ✅ Saved (${content.length} chars)`);
 }
 
-async function downloadInteractive(client: Awaited<ReturnType<typeof NotebookLMClient.connect>>, a: Artifact, dir: string) {
+async function downloadInteractive(
+  client: Awaited<ReturnType<typeof NotebookLMClient.connect>>,
+  a: Artifact,
+  dir: string,
+) {
   const filepath = path.join(dir, `${a.id}.html`);
   const label = a.kind === "quiz" ? "📝" : "🃏";
   console.log(`  ${label} Downloading ${a.kind} → downloads/${a.id}.html`);

@@ -197,7 +197,9 @@ export async function connect(opts: ConnectOptions): Promise<AuthTokens> {
     cookieMap = loadCookiesFromFile(opts.cookiesFile);
   } else if (opts.cookiesObject) {
     if ("cookies" in opts.cookiesObject && Array.isArray(opts.cookiesObject.cookies)) {
-      const storageState = opts.cookiesObject as { cookies: Array<{ name: string; value: string; domain: string }> };
+      const storageState = opts.cookiesObject as {
+        cookies: Array<{ name: string; value: string; domain: string }>;
+      };
       cookieMap = loadCookiesFromObject(storageState);
       googleCookieHeader = buildGoogleCookieHeader(storageState);
     } else {

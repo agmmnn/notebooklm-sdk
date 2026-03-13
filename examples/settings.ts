@@ -2,8 +2,13 @@ import { NotebookLMClient } from "../src/index.js";
 
 async function main() {
   const cookieVar = process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
-  if (!cookieVar) { console.error("❌ Please set NOTEBOOKLM_COOKIE in your .env file."); process.exit(1); }
-  const opts = cookieVar.trim().startsWith("{") ? { cookiesObject: JSON.parse(cookieVar) } : { cookies: cookieVar };
+  if (!cookieVar) {
+    console.error("❌ Please set NOTEBOOKLM_COOKIE in your .env file.");
+    process.exit(1);
+  }
+  const opts = cookieVar.trim().startsWith("{")
+    ? { cookiesObject: JSON.parse(cookieVar) }
+    : { cookies: cookieVar };
   const client = await NotebookLMClient.connect(opts);
   console.log("✅ Connected\n");
 
@@ -19,4 +24,7 @@ async function main() {
   console.log(`   shareUrl:    ${status.shareUrl ?? "(none)"}`);
 }
 
-main().catch((err) => { console.error("❌ Fatal error:", err); process.exit(1); });
+main().catch((err) => {
+  console.error("❌ Fatal error:", err);
+  process.exit(1);
+});

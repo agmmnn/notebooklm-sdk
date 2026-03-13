@@ -162,7 +162,12 @@ export class ArtifactsAPI {
       [2],
       notebookId,
       [
-        null, null, ArtifactTypeCode.AUDIO, triple, null, null,
+        null,
+        null,
+        ArtifactTypeCode.AUDIO,
+        triple,
+        null,
+        null,
         [null, [opts.instructions ?? null, length, null, double, language, null, format]],
       ],
     ];
@@ -182,7 +187,14 @@ export class ArtifactsAPI {
       [2],
       notebookId,
       [
-        null, null, ArtifactTypeCode.VIDEO, triple, null, null, null, null,
+        null,
+        null,
+        ArtifactTypeCode.VIDEO,
+        triple,
+        null,
+        null,
+        null,
+        null,
         [null, null, [double, language, opts.instructions ?? null, null, format, style]],
       ],
     ];
@@ -200,14 +212,28 @@ export class ArtifactsAPI {
       [2],
       notebookId,
       [
-        null, null, ArtifactTypeCode.QUIZ, triple, null, null, null, null, null,
-        [null, [2, null, opts.instructions ?? null, null, null, null, null, [quantity, difficulty]]],
+        null,
+        null,
+        ArtifactTypeCode.QUIZ,
+        triple,
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          null,
+          [2, null, opts.instructions ?? null, null, null, null, null, [quantity, difficulty]],
+        ],
       ],
     ];
     return this._callGenerate(notebookId, params);
   }
 
-  async createFlashcards(notebookId: string, opts: CreateQuizOptions = {}): Promise<GenerationStatus> {
+  async createFlashcards(
+    notebookId: string,
+    opts: CreateQuizOptions = {},
+  ): Promise<GenerationStatus> {
     const quantity = opts.quantity ?? null;
     const difficulty = opts.difficulty ?? null;
     const sourceIds = opts.sourceIds ?? (await this.rpc.getSourceIds(notebookId));
@@ -218,14 +244,25 @@ export class ArtifactsAPI {
       [2],
       notebookId,
       [
-        null, null, ArtifactTypeCode.QUIZ, triple, null, null, null, null, null,
+        null,
+        null,
+        ArtifactTypeCode.QUIZ,
+        triple,
+        null,
+        null,
+        null,
+        null,
+        null,
         [null, [1, null, opts.instructions ?? null, null, null, null, [difficulty, quantity]]],
       ],
     ];
     return this._callGenerate(notebookId, params);
   }
 
-  async createInfographic(notebookId: string, opts: CreateInfographicOptions = {}): Promise<GenerationStatus> {
+  async createInfographic(
+    notebookId: string,
+    opts: CreateInfographicOptions = {},
+  ): Promise<GenerationStatus> {
     const orientation = opts.orientation ?? null;
     const detail = opts.detail ?? null;
     const style = opts.style ?? null;
@@ -238,15 +275,30 @@ export class ArtifactsAPI {
       [2],
       notebookId,
       [
-        null, null, ArtifactTypeCode.INFOGRAPHIC, triple, null, null,
-        null, null, null, null, null, null, null, null,
+        null,
+        null,
+        ArtifactTypeCode.INFOGRAPHIC,
+        triple,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         [[opts.instructions ?? null, language, null, orientation, detail, style]],
       ],
     ];
     return this._callGenerate(notebookId, params);
   }
 
-  async createSlideDeck(notebookId: string, opts: CreateSlideDeckOptions = {}): Promise<GenerationStatus> {
+  async createSlideDeck(
+    notebookId: string,
+    opts: CreateSlideDeckOptions = {},
+  ): Promise<GenerationStatus> {
     const format = opts.format ?? null;
     const length = opts.length ?? null;
     const language = opts.language ?? "en";
@@ -258,15 +310,32 @@ export class ArtifactsAPI {
       [2],
       notebookId,
       [
-        null, null, ArtifactTypeCode.SLIDE_DECK, triple, null, null,
-        null, null, null, null, null, null, null, null, null, null,
+        null,
+        null,
+        ArtifactTypeCode.SLIDE_DECK,
+        triple,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         [[opts.instructions ?? null, language, format, length]],
       ],
     ];
     return this._callGenerate(notebookId, params);
   }
 
-  async createReport(notebookId: string, opts: CreateReportOptions = {}): Promise<GenerationStatus> {
+  async createReport(
+    notebookId: string,
+    opts: CreateReportOptions = {},
+  ): Promise<GenerationStatus> {
     const format = opts.format ?? "briefing_doc";
     const language = opts.language ?? "en";
     const sourceIds = opts.sourceIds ?? (await this.rpc.getSourceIds(notebookId));
@@ -312,7 +381,13 @@ export class ArtifactsAPI {
       [2],
       notebookId,
       [
-        null, null, ArtifactTypeCode.REPORT, triple, null, null, null,
+        null,
+        null,
+        ArtifactTypeCode.REPORT,
+        triple,
+        null,
+        null,
+        null,
         [null, [cfg.title, cfg.description, null, double, language, prompt, null, true]],
       ],
     ];
@@ -326,7 +401,10 @@ export class ArtifactsAPI {
     // Mind map uses GENERATE_MIND_MAP RPC with a completely different param layout
     const params = [
       triple,
-      null, null, null, null,
+      null,
+      null,
+      null,
+      null,
       ["interactive_mindmap", [["[CONTEXT]", ""]], ""],
       null,
       [2, null, [1]],
@@ -427,7 +505,8 @@ export class ArtifactsAPI {
 
       if (response.status >= 300 && response.status < 400) {
         const location = response.headers.get("location");
-        if (!location) throw new Error(`Redirect with no Location header (status ${response.status})`);
+        if (!location)
+          throw new Error(`Redirect with no Location header (status ${response.status})`);
         current = location.startsWith("http") ? location : new URL(location, current).href;
         continue;
       }
@@ -456,11 +535,15 @@ export class ArtifactsAPI {
     if (Array.isArray(result) && result.length > 0) {
       const artifactData = result[0] as unknown[];
       const artifactId =
-        Array.isArray(artifactData) && artifactData.length > 0 && typeof artifactData[0] === "string"
+        Array.isArray(artifactData) &&
+        artifactData.length > 0 &&
+        typeof artifactData[0] === "string"
           ? (artifactData[0] as string)
           : null;
       const statusCode =
-        Array.isArray(artifactData) && artifactData.length > 4 && typeof artifactData[4] === "number"
+        Array.isArray(artifactData) &&
+        artifactData.length > 4 &&
+        typeof artifactData[4] === "number"
           ? (artifactData[4] as number)
           : null;
 
@@ -479,7 +562,12 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const TRUSTED_MEDIA_DOMAINS = [".google.com", ".googleusercontent.com", ".googleapis.com", ".usercontent.google.com"];
+const TRUSTED_MEDIA_DOMAINS = [
+  ".google.com",
+  ".googleusercontent.com",
+  ".googleapis.com",
+  ".usercontent.google.com",
+];
 
 function isTrustedDomain(url: string): boolean {
   try {

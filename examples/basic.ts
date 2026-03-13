@@ -2,13 +2,10 @@ import { NotebookLMClient } from "../src/index.js";
 
 async function main() {
   // 1. Read the cookie string from the environment variable (e.g. from .env file)
-  const cookieVar =
-    process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
+  const cookieVar = process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
 
   if (!cookieVar) {
-    console.error(
-      "❌ Please set NOTEBOOKLM_COOKIE in your environment variables or .env file.",
-    );
+    console.error("❌ Please set NOTEBOOKLM_COOKIE in your environment variables or .env file.");
     process.exit(1);
   }
 
@@ -45,9 +42,7 @@ async function main() {
     // 5. Example: List sources for the first notebook
     if (notebooks.length > 0) {
       const firstNb = notebooks[0];
-      console.log(
-        `\n📄 Fetching sources for the first notebook: "${firstNb.title}"...`,
-      );
+      console.log(`\n📄 Fetching sources for the first notebook: "${firstNb.title}"...`);
 
       const sources = await client.sources.list(firstNb.id);
       console.log(`Found ${sources.length} sources.`);

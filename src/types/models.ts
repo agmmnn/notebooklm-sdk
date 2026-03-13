@@ -241,7 +241,12 @@ export function parseArtifact(data: Raw[], notebookId: string): Artifact {
 
   // Quiz/flashcard variant is at data[9][1][0]: 1=flashcards, 2=quiz
   let variant: number | null = null;
-  if (typeCode === 4 && Array.isArray(data[9]) && Array.isArray(data[9][1]) && typeof data[9][1][0] === "number") {
+  if (
+    typeCode === 4 &&
+    Array.isArray(data[9]) &&
+    Array.isArray(data[9][1]) &&
+    typeof data[9][1][0] === "number"
+  ) {
     variant = data[9][1][0] as number;
   }
 
@@ -267,7 +272,12 @@ export function parseArtifact(data: Raw[], notebookId: string): Artifact {
   if (Array.isArray(data[8])) {
     const meta8 = data[8] as unknown[][];
     for (const item of meta8) {
-      if (Array.isArray(item) && Array.isArray(item[0]) && typeof (item[0] as unknown[])[0] === "string" && ((item[0] as unknown[])[0] as string).startsWith("http")) {
+      if (
+        Array.isArray(item) &&
+        Array.isArray(item[0]) &&
+        typeof (item[0] as unknown[])[0] === "string" &&
+        ((item[0] as unknown[])[0] as string).startsWith("http")
+      ) {
         const mediaList = item as unknown[][];
         let best: string | null = null;
         for (const m of mediaList) {
@@ -276,7 +286,11 @@ export function parseArtifact(data: Raw[], notebookId: string): Artifact {
             if (m[1] === 4) break;
           }
         }
-        videoUrl = best ?? (Array.isArray(mediaList[0]) && typeof mediaList[0][0] === "string" ? (mediaList[0][0] as string) : null);
+        videoUrl =
+          best ??
+          (Array.isArray(mediaList[0]) && typeof mediaList[0][0] === "string"
+            ? (mediaList[0][0] as string)
+            : null);
         break;
       }
     }
