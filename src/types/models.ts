@@ -1,10 +1,10 @@
 import type {
   ArtifactStatus,
   ArtifactType,
-  SourceStatus,
-  SourceType,
   artifactStatusFromCode,
   artifactTypeFromCode,
+  SourceStatus,
+  SourceType,
   sourceStatusFromCode,
   sourceTypeFromCode,
 } from "./enums.js";

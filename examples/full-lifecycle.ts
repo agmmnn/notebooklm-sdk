@@ -1,13 +1,10 @@
 import { NotebookLMClient } from "../src/index.js";
 
 async function main() {
-  const cookieVar =
-    process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
+  const cookieVar = process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
 
   if (!cookieVar) {
-    console.error(
-      "❌ Please set NOTEBOOKLM_COOKIE in your environment variables or .env file.",
-    );
+    console.error("❌ Please set NOTEBOOKLM_COOKIE in your environment variables or .env file.");
     process.exit(1);
   }
 
@@ -25,8 +22,7 @@ async function main() {
 
     // 1. Create a new notebook
     console.log("\n📓 Creating a new notebook...");
-    const { id: notebookId } =
-      await client.notebooks.create("Temp Work Notebook");
+    const { id: notebookId } = await client.notebooks.create("Temp Work Notebook");
     console.log(`✅ Created notebook with ID: ${notebookId}`);
 
     // 2. Rename it

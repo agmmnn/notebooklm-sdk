@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { NotebookLMClient } from "../../src/index.js";
 
 // Check for required environment variables

@@ -1,8 +1,8 @@
+import type { AuthTokens } from "../auth.js";
+import type { RPCCore } from "../rpc/core.js";
 import { RPCMethod } from "../types/enums.js";
 import { ChatError } from "../types/errors.js";
 import type { AskResult, ChatReference, ConversationTurn } from "../types/models.js";
-import type { RPCCore } from "../rpc/core.js";
-import type { AuthTokens } from "../auth.js";
 
 const QUERY_URL =
   "https://notebooklm.google.com/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed";

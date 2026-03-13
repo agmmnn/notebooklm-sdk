@@ -1,19 +1,5 @@
-import {
-  AudioFormat,
-  AudioLength,
-  ArtifactTypeCode,
-  InfographicDetail,
-  InfographicOrientation,
-  InfographicStyle,
-  QuizDifficulty,
-  QuizQuantity,
-  RPCMethod,
-  SlideDeckFormat,
-  SlideDeckLength,
-  VideoFormat,
-  VideoStyle,
-  artifactStatusFromCode,
-} from "../types/enums.js";
+import type { AuthTokens } from "../auth.js";
+import type { RPCCore } from "../rpc/core.js";
 import type {
   AudioFormatValue,
   AudioLengthValue,
@@ -27,11 +13,25 @@ import type {
   VideoFormatValue,
   VideoStyleValue,
 } from "../types/enums.js";
+import {
+  ArtifactTypeCode,
+  AudioFormat,
+  AudioLength,
+  artifactStatusFromCode,
+  InfographicDetail,
+  InfographicOrientation,
+  InfographicStyle,
+  QuizDifficulty,
+  QuizQuantity,
+  RPCMethod,
+  SlideDeckFormat,
+  SlideDeckLength,
+  VideoFormat,
+  VideoStyle,
+} from "../types/enums.js";
 import { ArtifactNotReadyError } from "../types/errors.js";
-import { parseArtifact } from "../types/models.js";
 import type { Artifact, GenerationStatus } from "../types/models.js";
-import type { RPCCore } from "../rpc/core.js";
-import type { AuthTokens } from "../auth.js";
+import { parseArtifact } from "../types/models.js";
 
 export interface CreateAudioOptions {
   format?: AudioFormatValue;

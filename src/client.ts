@@ -1,14 +1,14 @@
-import { connect } from "./auth.js";
-import type { AuthTokens, ConnectOptions } from "./auth.js";
-import { RPCCore } from "./rpc/core.js";
-import { NotebooksAPI } from "./api/notebooks.js";
-import { SourcesAPI } from "./api/sources.js";
 import { ArtifactsAPI } from "./api/artifacts.js";
 import { ChatAPI } from "./api/chat.js";
+import { NotebooksAPI } from "./api/notebooks.js";
 import { NotesAPI } from "./api/notes.js";
 import { ResearchAPI } from "./api/research.js";
 import { SettingsAPI } from "./api/settings.js";
 import { SharingAPI } from "./api/sharing.js";
+import { SourcesAPI } from "./api/sources.js";
+import type { AuthTokens, ConnectOptions } from "./auth.js";
+import { connect } from "./auth.js";
+import { RPCCore } from "./rpc/core.js";
 
 export interface ClientOptions {
   /** HTTP request timeout in milliseconds. Default: 30000 */

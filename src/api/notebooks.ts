@@ -1,7 +1,7 @@
+import type { RPCCore } from "../rpc/core.js";
 import { RPCMethod } from "../types/enums.js";
 import type { Notebook, NotebookDescription, SuggestedTopic } from "../types/models.js";
 import { parseNotebook } from "../types/models.js";
-import type { RPCCore } from "../rpc/core.js";
 
 export class NotebooksAPI {
   constructor(private readonly rpc: RPCCore) {}

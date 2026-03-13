@@ -1,5 +1,5 @@
-import { RPCMethod } from "../types/enums.js";
 import type { RPCCore } from "../rpc/core.js";
+import { RPCMethod } from "../types/enums.js";
 
 export class SettingsAPI {
   constructor(private readonly rpc: RPCCore) {}

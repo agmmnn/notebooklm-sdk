@@ -1,6 +1,6 @@
-import { RPCMethod } from "../types/enums.js";
-import type { RPCMethodId } from "../types/enums.js";
 import type { RPCCore } from "../rpc/core.js";
+import type { RPCMethodId } from "../types/enums.js";
+import { RPCMethod } from "../types/enums.js";
 
 export interface ResearchTask {
   taskId: string;

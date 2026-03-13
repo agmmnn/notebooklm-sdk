@@ -1,8 +1,8 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import * as fs from "fs";
 import * as path from "path";
-import { RPCCore } from "../../src/rpc/core.js";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ArtifactsAPI } from "../../src/api/artifacts.js";
+import { RPCCore } from "../../src/rpc/core.js";
 
 function getFixture(filename: string): string {
   return fs.readFileSync(path.join(__dirname, `../fixtures/responses/${filename}`), "utf-8");

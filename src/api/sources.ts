@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
+import type { AuthTokens } from "../auth.js";
+import type { RPCCore } from "../rpc/core.js";
 import { RPCMethod } from "../types/enums.js";
 import { SourceProcessingError, SourceTimeoutError } from "../types/errors.js";
-import { parseSource } from "../types/models.js";
 import type { Source } from "../types/models.js";
-import type { RPCCore } from "../rpc/core.js";
-import type { AuthTokens } from "../auth.js";
+import { parseSource } from "../types/models.js";
 
 const UPLOAD_URL = "https://notebooklm.google.com/upload/_/";
 
@@ -43,7 +43,7 @@ export class SourcesAPI {
 
   async addUrl(notebookId: string, url: string, opts: AddSourceOptions = {}): Promise<Source> {
     const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
-    
+
     let params: unknown[];
     if (isYouTube) {
       params = [
@@ -53,13 +53,7 @@ export class SourcesAPI {
         [1, null, null, null, null, null, null, null, null, null, [1]],
       ];
     } else {
-      params = [
-        [[null, null, [url], null, null, null, null, null]],
-        notebookId,
-        [2],
-        null,
-        null,
-      ];
+      params = [[[null, null, [url], null, null, null, null, null]], notebookId, [2], null, null];
     }
 
     const result = await this.rpc.call(RPCMethod.ADD_SOURCE, params, {
@@ -208,10 +202,7 @@ export class SourcesAPI {
     return uploadSessionUrl;
   }
 
-  private async uploadFile(
-    uploadUrl: string,
-    data: Buffer | Uint8Array,
-  ): Promise<string> {
+  private async uploadFile(uploadUrl: string, data: Buffer | Uint8Array): Promise<string> {
     const uploadResp = await fetch(uploadUrl, {
       method: "POST",
       headers: {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCookieHeader, loadCookiesFromString, loadCookiesFromObject } from "../../src/auth.js";
+import { buildCookieHeader, loadCookiesFromObject, loadCookiesFromString } from "../../src/auth.js";
 import { AuthError } from "../../src/types/errors.js";
 
 describe("loadCookiesFromString", () => {

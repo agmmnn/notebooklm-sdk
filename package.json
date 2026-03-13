@@ -41,7 +41,7 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "bun run test && bun run build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.7",

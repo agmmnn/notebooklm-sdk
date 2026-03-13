@@ -1,7 +1,7 @@
-import { RPCMethod } from "../types/enums.js";
-import { parseNote } from "../types/models.js";
-import type { MindMap, Note } from "../types/models.js";
 import type { RPCCore } from "../rpc/core.js";
+import { RPCMethod } from "../types/enums.js";
+import type { MindMap, Note } from "../types/models.js";
+import { parseNote } from "../types/models.js";
 
 export class NotesAPI {
   constructor(private readonly rpc: RPCCore) {}

@@ -1,11 +1,11 @@
-import { RPCMethod, ShareAccess, SharePermission, ShareViewLevel } from "../types/enums.js";
+import type { RPCCore } from "../rpc/core.js";
 import type {
   ShareAccessValue,
   SharePermissionValue,
   ShareViewLevelValue,
 } from "../types/enums.js";
+import { RPCMethod, ShareAccess, SharePermission, ShareViewLevel } from "../types/enums.js";
 import type { SharedUser, ShareStatus } from "../types/models.js";
-import type { RPCCore } from "../rpc/core.js";
 
 export type { ShareAccessValue, SharePermissionValue, ShareViewLevelValue };
 
