@@ -16,14 +16,50 @@ bun add notebooklm-sdk
 
 ## Usage
 
+For full, runnable scripts, check out the `examples/` directory in this repository.
+
+### Basic Connection & Fetching
+
 ```typescript
+import { NotebookLMClient } from "notebooklm-sdk";
+
+// 1. You can pass a string or parsed JSON object (e.g., from Playwright)
 const client = await NotebookLMClient.connect({
-  cookies: process.env.NOTEBOOKLM_COOKIES,
+  cookies: process.env.NOTEBOOKLM_COOKIE,
 });
 
+// 2. Fetch notebooks
 const notebooks = await client.notebooks.list();
 
-const audio = await client.artifacts.createAudio(notebookId);
+// 3. Create artifacts (e.g. an Audio Podcast)
+const audio = await client.artifacts.createAudio(notebooks[0].id);
+```
+
+## Examples
+
+We provide runnable scripts in the [`examples/`](./examples) directory. 
+Make sure you have an `.env` file with `NOTEBOOKLM_COOKIE` defined (it can be your raw cookie string or a Playwright `storage_state.json` array).
+
+### 1. Basic Connection & Fetch 
+A simple script that connects to NotebookLM, fetches all your notebooks, and lists the sources in the first notebook.
+
+```bash
+# Using bun
+bunx dotenv -e .env -- bunx tsx examples/basic.ts
+
+# Using npx
+npx dotenv -e .env -- npx tsx examples/basic.ts
+```
+
+### 2. Generate and Download a Report
+An end-to-end script that triggers the generation of a Summary Report, polls the API until it's ready, and downloads the interactive HTML to your disk.
+
+```bash
+# Using bun
+bunx dotenv -e .env -- bunx tsx examples/report.ts
+
+# Using npx
+npx dotenv -e .env -- npx tsx examples/report.ts
 ```
 
 ## Structure
