@@ -59,7 +59,7 @@ describe("SourcesAPI", () => {
 
   it("addText() adds a text source", async () => {
     mockFetchWithFixture("sources_add_text");
-    const src = await api.addText("nb-id", "My text source", "Some test content");
+    const src = await api.addText("nb-id", "Some test content", "My text source");
     expect(src).toHaveProperty("id");
   });
 

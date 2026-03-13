@@ -10,6 +10,8 @@ export interface AuthTokens {
   csrfToken: string;
   sessionId: string;
   cookieHeader: string;
+  /** Cookie header containing only .google.com domain cookies — for media downloads */
+  googleCookieHeader: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -34,6 +36,19 @@ export function loadCookiesFromObject(storageState: {
   cookies?: Array<{ name: string; value: string; domain: string }>;
 }): CookieMap {
   return extractCookiesFromStorageState(storageState);
+}
+
+/** Build a cookie header containing only .google.com domain cookies (for media downloads). */
+export function buildGoogleCookieHeader(storageState: {
+  cookies?: Array<{ name: string; value: string; domain: string }>;
+}): string {
+  const map: CookieMap = {};
+  for (const c of storageState.cookies ?? []) {
+    if (c.domain === ".google.com" && c.name && c.value) {
+      map[c.name] = map[c.name] ?? c.value;
+    }
+  }
+  return buildCookieHeader(map);
 }
 
 /** Load cookies from a flat cookie map (already parsed). */
@@ -174,6 +189,7 @@ export interface ConnectOptions {
 
 export async function connect(opts: ConnectOptions): Promise<AuthTokens> {
   let cookieMap: CookieMap;
+  let googleCookieHeader: string | null = null;
 
   if (opts.cookies) {
     cookieMap = loadCookiesFromString(opts.cookies);
@@ -181,9 +197,9 @@ export async function connect(opts: ConnectOptions): Promise<AuthTokens> {
     cookieMap = loadCookiesFromFile(opts.cookiesFile);
   } else if (opts.cookiesObject) {
     if ("cookies" in opts.cookiesObject && Array.isArray(opts.cookiesObject.cookies)) {
-      cookieMap = loadCookiesFromObject(
-        opts.cookiesObject as { cookies: Array<{ name: string; value: string; domain: string }> },
-      );
+      const storageState = opts.cookiesObject as { cookies: Array<{ name: string; value: string; domain: string }> };
+      cookieMap = loadCookiesFromObject(storageState);
+      googleCookieHeader = buildGoogleCookieHeader(storageState);
     } else {
       cookieMap = loadCookiesFromMap(opts.cookiesObject as CookieMap);
     }
@@ -200,11 +216,13 @@ export async function connect(opts: ConnectOptions): Promise<AuthTokens> {
   }
 
   const { csrfToken, sessionId } = await fetchTokens(cookieMap);
+  const cookieHeader = buildCookieHeader(cookieMap);
 
   return {
     cookies: cookieMap,
     csrfToken,
     sessionId,
-    cookieHeader: buildCookieHeader(cookieMap),
+    cookieHeader,
+    googleCookieHeader: googleCookieHeader ?? cookieHeader,
   };
 }

@@ -301,3 +301,35 @@ export function artifactStatusFromCode(code: number): ArtifactStatus {
 export function sourceStatusFromCode(code: number): SourceStatus {
   return SOURCE_STATUS_MAP[code] ?? "unknown";
 }
+
+// ---------------------------------------------------------------------------
+// Sharing enums
+// ---------------------------------------------------------------------------
+
+export const ShareAccess = {
+  /** Only explicitly shared users can access */
+  RESTRICTED: 0,
+  /** Anyone with the link can access */
+  ANYONE_WITH_LINK: 1,
+} as const;
+
+export type ShareAccessValue = (typeof ShareAccess)[keyof typeof ShareAccess];
+
+export const ShareViewLevel = {
+  /** Chat + sources + notes */
+  FULL_NOTEBOOK: 0,
+  /** Chat interface only */
+  CHAT_ONLY: 1,
+} as const;
+
+export type ShareViewLevelValue = (typeof ShareViewLevel)[keyof typeof ShareViewLevel];
+
+export const SharePermission = {
+  OWNER: 1,
+  EDITOR: 2,
+  VIEWER: 3,
+  /** Internal: remove user from share list */
+  _REMOVE: 4,
+} as const;
+
+export type SharePermissionValue = (typeof SharePermission)[keyof typeof SharePermission];

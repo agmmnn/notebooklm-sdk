@@ -65,26 +65,30 @@ describe("ArtifactsAPI", () => {
 
   it("createQuiz() generates a quiz", async () => {
     mockFetchWithFixture("artifacts_generate_quiz");
-    const art = await api.createQuiz("nb-id", { sourceIds: ["src-id"] });
-    expect(art).toHaveProperty("id");
+    const result = await api.createQuiz("nb-id", { sourceIds: ["src-id"] });
+    expect(result).toHaveProperty("artifactId");
+    expect(result).toHaveProperty("status");
   });
 
   it("createFlashcards() generates flashcards", async () => {
     mockFetchWithFixture("artifacts_generate_flashcards");
-    const art = await api.createFlashcards("nb-id", { sourceIds: ["src-id"] });
-    expect(art).toHaveProperty("id");
+    const result = await api.createFlashcards("nb-id", { sourceIds: ["src-id"] });
+    expect(result).toHaveProperty("artifactId");
+    expect(result).toHaveProperty("status");
   });
 
   it("createReport() generates a report", async () => {
     mockFetchWithFixture("artifacts_generate_report");
-    const art = await api.createReport("nb-id", { sourceIds: ["src-id"] });
-    expect(art).toHaveProperty("id");
+    const result = await api.createReport("nb-id", { sourceIds: ["src-id"] });
+    expect(result).toHaveProperty("artifactId");
+    expect(result).toHaveProperty("status");
   });
 
   it("createMindMap() generates a mind map", async () => {
     // We use a generate fixture since createMindMap just invokes CREATE_ARTIFACT
     mockFetchWithFixture("artifacts_generate_quiz");
-    const art = await api.createMindMap("nb-id", ["src-id"]);
-    expect(art).toHaveProperty("id");
+    const result = await api.createMindMap("nb-id", ["src-id"]);
+    expect(result).toHaveProperty("artifactId");
+    expect(result).toHaveProperty("status");
   });
 });

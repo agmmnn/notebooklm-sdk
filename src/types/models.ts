@@ -83,8 +83,11 @@ export interface Artifact {
   status: ArtifactStatus;
   notebookId: string;
   audioUrl: string | null;
+  videoUrl: string | null;
   exportUrl: string | null;
   shareUrl: string | null;
+  /** Markdown content for report artifacts (data[7][0]) */
+  content: string | null;
   /** Raw data from API */
   _raw: unknown[];
 }
@@ -92,6 +95,28 @@ export interface Artifact {
 export interface GenerationStatus {
   status: ArtifactStatus;
   artifactId: string | null;
+}
+
+// ---------------------------------------------------------------------------
+// Sharing
+// ---------------------------------------------------------------------------
+
+export interface SharedUser {
+  email: string;
+  permission: "owner" | "editor" | "viewer";
+  displayName: string | null;
+  avatarUrl: string | null;
+}
+
+export interface ShareStatus {
+  notebookId: string;
+  isPublic: boolean;
+  /** 0 = restricted, 1 = anyone with link */
+  access: number;
+  /** 0 = full notebook, 1 = chat only */
+  viewLevel: number;
+  sharedUsers: SharedUser[];
+  shareUrl: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -212,13 +237,57 @@ export function parseArtifact(data: Raw[], notebookId: string): Artifact {
   const id = typeof data[0] === "string" ? data[0] : "";
   const title = typeof data[1] === "string" ? data[1] : null;
   const typeCode = typeof data[2] === "number" ? (data[2] as number) : 0;
-  const variant = typeof data[3] === "number" ? (data[3] as number) : null;
   const statusCode = typeof data[4] === "number" ? (data[4] as number) : 0;
 
-  // Audio URL at data[6][0] (when available)
+  // Quiz/flashcard variant is at data[9][1][0]: 1=flashcards, 2=quiz
+  let variant: number | null = null;
+  if (typeCode === 4 && Array.isArray(data[9]) && Array.isArray(data[9][1]) && typeof data[9][1][0] === "number") {
+    variant = data[9][1][0] as number;
+  }
+
+  // Audio URL at data[6][5]: list of [url, ..., mime_type] media items
   let audioUrl: string | null = null;
-  if (Array.isArray(data[6]) && typeof data[6][0] === "string") {
-    audioUrl = data[6][0] as string;
+  const meta6 = data[6];
+  if (Array.isArray(meta6) && Array.isArray(meta6[5])) {
+    const mediaList = meta6[5] as unknown[][];
+    // Prefer audio/mp4 item; fallback to first item
+    for (const item of mediaList) {
+      if (Array.isArray(item) && item[2] === "audio/mp4" && typeof item[0] === "string") {
+        audioUrl = item[0] as string;
+        break;
+      }
+    }
+    if (!audioUrl && Array.isArray(mediaList[0]) && typeof mediaList[0][0] === "string") {
+      audioUrl = mediaList[0][0] as string;
+    }
+  }
+
+  // Video URL at data[8]: scan for nested list with HTTP items, prefer video/mp4 priority 4
+  let videoUrl: string | null = null;
+  if (Array.isArray(data[8])) {
+    const meta8 = data[8] as unknown[][];
+    for (const item of meta8) {
+      if (Array.isArray(item) && Array.isArray(item[0]) && typeof (item[0] as unknown[])[0] === "string" && ((item[0] as unknown[])[0] as string).startsWith("http")) {
+        const mediaList = item as unknown[][];
+        let best: string | null = null;
+        for (const m of mediaList) {
+          if (Array.isArray(m) && m[2] === "video/mp4" && typeof m[0] === "string") {
+            best = m[0] as string;
+            if (m[1] === 4) break;
+          }
+        }
+        videoUrl = best ?? (Array.isArray(mediaList[0]) && typeof mediaList[0][0] === "string" ? (mediaList[0][0] as string) : null);
+        break;
+      }
+    }
+  }
+
+  // Report markdown content at data[7] or data[7][0]
+  let content: string | null = null;
+  if (Array.isArray(data[7]) && typeof data[7][0] === "string") {
+    content = data[7][0] as string;
+  } else if (typeof data[7] === "string") {
+    content = data[7] as string;
   }
 
   return {
@@ -228,8 +297,10 @@ export function parseArtifact(data: Raw[], notebookId: string): Artifact {
     status: _artifactStatusFromCode(statusCode),
     notebookId,
     audioUrl,
+    videoUrl,
     exportUrl: null,
     shareUrl: null,
+    content,
     _raw: Array.isArray(data) ? data : [],
   };
 }

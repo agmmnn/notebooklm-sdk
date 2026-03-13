@@ -20,6 +20,8 @@ export type {
   Notebook,
   NotebookDescription,
   NotebookMetadata,
+  ShareStatus,
+  SharedUser,
   Source,
   SourceStatus,
   SourceSummary,
@@ -39,6 +41,9 @@ export {
   QuizDifficulty,
   QuizQuantity,
   RPCMethod,
+  ShareAccess,
+  SharePermission,
+  ShareViewLevel,
   SlideDeckFormat,
   SlideDeckLength,
   VideoFormat,
@@ -55,6 +60,9 @@ export type {
   QuizDifficultyValue,
   QuizQuantityValue,
   RPCMethodId,
+  ShareAccessValue,
+  SharePermissionValue,
+  ShareViewLevelValue,
   SlideDeckFormatValue,
   SlideDeckLengthValue,
   VideoFormatValue,
@@ -91,6 +99,8 @@ export { ArtifactsAPI } from "./api/artifacts.js";
 export { ChatAPI } from "./api/chat.js";
 export { NotebooksAPI } from "./api/notebooks.js";
 export { NotesAPI } from "./api/notes.js";
+export { SettingsAPI } from "./api/settings.js";
+export { SharingAPI } from "./api/sharing.js";
 export { SourcesAPI } from "./api/sources.js";
 
 // API option types

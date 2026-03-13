@@ -40,7 +40,9 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "format:check": "biome format .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "example:basic": "tsx examples/basic.ts",
+    "example:report": "tsx examples/report.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.6",
@@ -48,6 +50,7 @@
     "@vitest/coverage-v8": "4.1.0",
     "dotenv-cli": "^11.0.0",
     "tsup": "^8.5.1",
+    "tsx": "^4.19.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   },
