@@ -26,6 +26,16 @@
         "types": "./dist/errors.d.cts",
         "default": "./dist/errors.cjs"
       }
+    },
+    "./auth": {
+      "import": {
+        "types": "./dist/auth.d.ts",
+        "default": "./dist/auth.js"
+      },
+      "require": {
+        "types": "./dist/auth.d.cts",
+        "default": "./dist/auth.cjs"
+      }
     }
   },
   "files": [
@@ -41,6 +51,7 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
+    "login": "tsx examples/login.ts",
     "prepublishOnly": "bun run test && bun run build"
   },
   "devDependencies": {
@@ -48,10 +59,19 @@
     "@types/node": "^25.5.0",
     "@vitest/coverage-v8": "4.1.0",
     "dotenv-cli": "^11.0.0",
+    "playwright": "^1.58.2",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
+  },
+  "peerDependencies": {
+    "playwright": "^1.58.2"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=18"

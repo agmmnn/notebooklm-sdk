@@ -1,17 +1,9 @@
 import { NotebookLMClient } from "../src/index.js";
 
 async function main() {
-  const cookieVar = process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
-  if (!cookieVar) {
-    console.error("No cookie");
-    process.exit(1);
-  }
-
-  const opts = cookieVar.trim().startsWith("{")
-    ? { cookiesObject: JSON.parse(cookieVar) }
-    : { cookies: cookieVar };
-
-  const client = await NotebookLMClient.connect(opts);
+  const client = await NotebookLMClient.connect({
+    cookiesFile: "storage_state.json",
+  });
   const notebooks = await client.notebooks.list();
   const nb = notebooks[0]!;
   console.log(`Notebook: ${nb.title}`);

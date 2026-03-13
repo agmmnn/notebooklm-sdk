@@ -1,8 +1,15 @@
 # notebooklm-sdk
 
-A lightweight, zero-dependency TypeScript SDK for the NotebookLM API. Works with Node.js, Bun, and Deno.
+[![npm version](https://img.shields.io/npm/v/notebooklm-sdk?style=flat-square)](https://www.npmjs.com/package/notebooklm-sdk)
+![types](https://img.shields.io/npm/types/notebooklm-sdk?style=flat-square)
+![license](https://img.shields.io/npm/l/notebooklm-sdk?style=flat-square)
 
-> **Note**: This SDK is a TypeScript port of [notebooklm-py](https://github.com/teng-lin/notebooklm-py).
+A lightweight, zero-dependency TypeScript SDK for the NotebookLM API.  
+Works in **Node.js, Bun, and Deno**.
+
+> This SDK is a TypeScript port of [notebooklm-py](https://github.com/teng-lin/notebooklm-py).
+
+---
 
 ## Installation
 
@@ -14,167 +21,194 @@ bun add notebooklm-sdk
 
 ## Authentication
 
-This SDK uses **manual cookie auth only** — no Playwright, no headless browser. You extract your cookies once and pass them in.
+### Quick Login (Recommended)
 
-**Option 1 — Raw cookie string** (from browser DevTools → Network tab → copy `Cookie` request header):
-
-```bash
-NOTEBOOKLM_COOKIE="SID=...; HSID=...; ..."
-```
-
-**Option 2 — Playwright `storage_state.json`** (JSON array of cookie objects):
+Run the built-in login script:
 
 ```bash
-NOTEBOOKLM_COOKIE='[{"name":"SID","value":"...","domain":".google.com",...}]'
+bun run login
+# or
+npm run login
 ```
 
-Then connect:
+This opens a real browser for Google sign-in and generates a
+`storage_state.json` file you can reuse.
 
-```typescript
+Then connect using the file:
+
+```ts
 import { NotebookLMClient } from "notebooklm-sdk";
 
+const client = await NotebookLMClient.connect({
+  cookiesFile: "./storage_state.json",
+});
+```
+
+Requires:
+
+```bash
+npx playwright install chromium
+```
+
+<details>
+<summary>Manual Authentication</summary>
+
+You can authenticate in multiple ways depending on your setup.
+
+#### 1. Use `.env` Cookie String
+
+Copy the `Cookie` header from DevTools → Network and store it:
+
+```bash
+NOTEBOOKLM_COOKIE="SID=...; HSID=..."
+```
+
+Then:
+
+```ts
 const client = await NotebookLMClient.connect({
   cookies: process.env.NOTEBOOKLM_COOKIE,
 });
 ```
 
-## API Reference
+---
 
-### Notebooks
+#### 2. Use Playwright `storage_state.json`
 
-```typescript
-const notebooks = await client.notebooks.list();
-const nb = await client.notebooks.get(notebookId);
-const { id: newNbId } = await client.notebooks.create("My Notebook");
-await client.notebooks.rename(newNbId, "New Title");
-await client.notebooks.delete(newNbId);
+If you already have a Playwright storage file:
 
-const summary = await client.notebooks.getSummary(notebookId);
-const description = await client.notebooks.getDescription(notebookId);
-// description.summary, description.suggestedTopics
+```ts
+const client = await NotebookLMClient.connect({
+  cookiesFile: "./storage_state.json",
+});
 ```
 
-### Sources
+---
 
-```typescript
+#### 3. Pass Cookies Directly
+
+You can also pass cookies at runtime:
+
+```ts
+const client = await NotebookLMClient.connect({
+  cookies: "SID=...; HSID=...",
+});
+```
+
+</details>
+
+---
+
+## Notebooks
+
+```ts
+const notebooks = await client.notebooks.list();
+const nb = await client.notebooks.get(id);
+
+const { id: newId } = await client.notebooks.create("My Notebook");
+
+await client.notebooks.rename(newId, "New Title");
+await client.notebooks.delete(newId);
+
+const summary = await client.notebooks.getSummary(id);
+const description = await client.notebooks.getDescription(id);
+```
+
+---
+
+## Sources
+
+```ts
 const sources = await client.sources.list(notebookId);
-const source = await client.sources.get(notebookId, sourceId);
 
-// Add sources
 const { sourceId } = await client.sources.addUrl(
   notebookId,
   "https://example.com",
 );
-const { sourceId } = await client.sources.addText(
-  notebookId,
-  "My text",
-  "My Title",
-);
+const { sourceId } = await client.sources.addText(notebookId, "Text", "Title");
 const { sourceId } = await client.sources.addFile(
   notebookId,
   buffer,
   "file.pdf",
 );
 
-// Poll until ready (status: "ready")
-const source = await client.sources.waitUntilReady(notebookId, sourceId);
+await client.sources.waitUntilReady(notebookId, sourceId);
 
 await client.sources.delete(notebookId, sourceId);
 ```
 
-### Artifacts
+---
 
-Generate AI artifacts from notebook sources:
+## Artifacts
 
-```typescript
-// Audio podcast
+Generate AI outputs from notebook sources.
+
+```ts
 const { artifactId } = await client.artifacts.createAudio(notebookId, {
-  format: AudioFormat.DEEP_DIVE, // DEEP_DIVE | BRIEF | CRITIQUE | DEBATE
-  length: AudioLength.DEFAULT, // SHORT | DEFAULT | LONG
+  format: AudioFormat.DEEP_DIVE,
+  length: AudioLength.DEFAULT,
   language: "en",
 });
 
-// Video
 const { artifactId } = await client.artifacts.createVideo(notebookId, {
-  format: VideoFormat.EXPLAINER, // EXPLAINER | BRIEF | CINEMATIC
+  format: VideoFormat.EXPLAINER,
 });
 
-// Quiz / Flashcards
-const { artifactId } = await client.artifacts.createQuiz(notebookId, {
-  difficulty: QuizDifficulty.MEDIUM,
-  quantity: QuizQuantity.STANDARD,
-});
+const { artifactId } = await client.artifacts.createQuiz(notebookId);
 const { artifactId } = await client.artifacts.createFlashcards(notebookId);
 
-// Report (markdown)
 const { artifactId } = await client.artifacts.createReport(notebookId, {
-  format: "briefing_doc", // "briefing_doc" | "study_guide" | "blog_post" | "custom"
-  language: "en",
+  format: "briefing_doc",
 });
-
-// Other artifact types
-await client.artifacts.createInfographic(notebookId);
-await client.artifacts.createSlideDeck(notebookId);
-await client.artifacts.createMindMap(notebookId);
 ```
 
-Poll and download:
+Wait & download:
 
-```typescript
-// Wait until ready
-const artifact = await client.artifacts.waitUntilReady(notebookId, artifactId);
+```ts
+await client.artifacts.waitUntilReady(notebookId, artifactId);
 
-// Download
-const audioBuffer = await client.artifacts.downloadAudio(
-  notebookId,
-  artifactId,
-);
-const videoBuffer = await client.artifacts.downloadVideo(
-  notebookId,
-  artifactId,
-);
+const audio = await client.artifacts.downloadAudio(notebookId, artifactId);
+const video = await client.artifacts.downloadVideo(notebookId, artifactId);
+
 const markdown = await client.artifacts.getReportMarkdown(
   notebookId,
   artifactId,
 );
-const html = await client.artifacts.getInteractiveHtml(notebookId, artifactId); // quiz/flashcards
+const html = await client.artifacts.getInteractiveHtml(notebookId, artifactId);
 ```
 
-### Chat
+---
 
-```typescript
-// Ask a question
-const result = await client.chat.ask(notebookId, "What is this about?");
-console.log(result.answer);
-console.log(result.references); // [{ sourceId, title, url }]
+## Chat
 
-// Follow-up (pass conversationId to continue the thread)
-const result2 = await client.chat.ask(notebookId, "Tell me more.", {
-  conversationId: result.conversationId,
+```ts
+const res = await client.chat.ask(notebookId, "What is this about?");
+console.log(res.answer);
+
+const follow = await client.chat.ask(notebookId, "Tell me more.", {
+  conversationId: res.conversationId,
 });
 
-// Fetch conversation history
-const lastConvId = await client.chat.getLastConversationId(notebookId);
-const turns = await client.chat.getConversationTurns(notebookId, lastConvId);
+const convId = await client.chat.getLastConversationId(notebookId);
+const turns = await client.chat.getConversationTurns(notebookId, convId);
 ```
 
-### Notes
+---
 
-```typescript
-const { notes, mindMaps } = await client.notes.list(notebookId);
+## Notes
 
-const { noteId } = await client.notes.create(
-  notebookId,
-  "# My Note\n\nContent here.",
-);
-await client.notes.update(notebookId, noteId, "Updated content.");
+```ts
+const { noteId } = await client.notes.create(notebookId, "# My Note");
+
+await client.notes.update(notebookId, noteId, "Updated");
 await client.notes.delete(notebookId, noteId);
 ```
 
-### Research
+---
 
-```typescript
-// Start a fast web search or deep research
+## Research
+
+```ts
 const task = await client.research.start(
   notebookId,
   "Latest advances in quantum computing",
@@ -182,14 +216,9 @@ const task = await client.research.start(
   "deep",
 );
 
-// Poll for results
 const result = await client.research.poll(notebookId);
 
 if (result.status === "completed") {
-  console.log(result.summary);
-  console.log(`Found ${result.sources.length} sources.`);
-
-  // Import desired sources into the notebook
   await client.research.importSources(
     notebookId,
     result.taskId,
@@ -198,108 +227,82 @@ if (result.status === "completed") {
 }
 ```
 
-### Sharing
+---
 
-```typescript
-const status = await client.sharing.getStatus(notebookId);
-// status.isPublic, status.sharedUsers, status.shareUrl
+## Sharing
 
-// Enable/disable public link sharing
+```ts
 await client.sharing.setPublic(notebookId, true);
 
-// Share with a specific user
 await client.sharing.addUser(
   notebookId,
   "user@example.com",
   SharePermission.VIEWER,
 );
-await client.sharing.updateUser(
-  notebookId,
-  "user@example.com",
-  SharePermission.EDITOR,
-);
-await client.sharing.removeUser(notebookId, "user@example.com");
 ```
 
-### Settings
+---
 
-```typescript
-const lang = await client.settings.getOutputLanguage(); // "en"
+## Settings
+
+```ts
+const lang = await client.settings.getOutputLanguage();
 await client.settings.setOutputLanguage("ja");
 ```
 
+---
+
 ## Examples
 
-Runnable scripts in [`examples/`](./examples). Requires `.env` with `NOTEBOOKLM_COOKIE`.
+Runnable scripts are in [`examples/`](./examples).
 
-| Script                 | What it does                                                               |
-| ---------------------- | -------------------------------------------------------------------------- |
-| `basic.ts`             | List notebooks and sources                                                 |
-| `report.ts`            | Generate and download a report                                             |
-| `audio.ts`             | Generate a podcast (long wait)                                             |
-| `download.ts`          | Download all completed artifacts (audio, video, reports, quiz, flashcards) |
-| `chat.ts`              | Ask questions and follow up                                                |
-| `research.ts`          | Start a web research session and import sources                            |
-| `research-and-chat.ts` | Complete workflow: create notebook, research, import sources, and chat     |
-| `full-lifecycle.ts`    | Create/rename notebook, upload files/urls/text, chat, and delete           |
-| `settings.ts`          | Check output language and sharing status                                   |
+Requires `.env`:
+
+```
+NOTEBOOKLM_COOKIE=...
+```
+
+Run:
 
 ```bash
+# for auto login
+bun run login
+bun run examples/basic.ts
+
+# for manual cookie
 bunx dotenv -e .env -- bunx tsx examples/basic.ts
 ```
 
+---
+
 ## Error Handling
 
-All errors extend `NotebookLMError`:
+All errors extend `NotebookLMError`.
 
-```typescript
-import {
-  ArtifactNotReadyError,
-  AuthError,
-  RateLimitError,
-} from "notebooklm-sdk";
-
+```ts
 try {
   await client.artifacts.downloadAudio(notebookId, artifactId);
 } catch (err) {
   if (err instanceof ArtifactNotReadyError) {
-    /* artifact still processing */
-  }
-  if (err instanceof AuthError) {
-    /* cookies expired */
-  }
-  if (err instanceof RateLimitError) {
-    /* back off */
+    // still processing
   }
 }
 ```
 
-Error classes: `AuthError`, `RateLimitError`, `NetworkError`, `ServerError`, `RPCError`, `RPCTimeoutError`, `ArtifactNotReadyError`, `ArtifactNotFoundError`, `SourceAddError`, `SourceProcessingError`, `SourceTimeoutError`, and more.
+---
 
 ## Project Structure
 
 ```
 src/
-├── client.ts          — NotebookLMClient
-├── auth.ts            — Cookie auth, token fetching
-├── index.ts           — Public exports
-├── api/
-│   ├── artifacts.ts   — Audio, video, quiz, report, slide deck, infographic, mind map
-│   ├── chat.ts        — Chat / Q&A
-│   ├── notebooks.ts   — CRUD + summary
-│   ├── notes.ts       — Notes + mind maps
-│   ├── settings.ts    — User settings
-│   ├── sharing.ts     — Notebook sharing
-│   └── sources.ts     — URL, text, file sources
-├── rpc/
-│   ├── core.ts        — HTTP + decode pipeline
-│   ├── encoder.ts     — Request encoding
-│   └── decoder.ts     — Response decoding
-└── types/
-    ├── enums.ts       — RPC method IDs, format options, status codes
-    ├── errors.ts      — Error hierarchy
-    └── models.ts      — Interfaces + response parsers
+  client.ts
+  auth.ts
+  api/
+  rpc/
+  types/
 ```
+
+---
 
 ## License
 

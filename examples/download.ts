@@ -13,21 +13,13 @@ import { NotebookLMClient } from "../src/index.js";
 import type { Artifact } from "../src/types/models.js";
 
 async function main() {
-  const cookieVar = process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
-  if (!cookieVar) {
-    console.error("❌ Please set NOTEBOOKLM_COOKIE in your .env file.");
-    process.exit(1);
-  }
+  const client = await NotebookLMClient.connect({
+    cookiesFile: "storage_state.json",
+  });
+  console.log("✅ Connected\n");
 
   const DOWNLOAD_DIR = path.join(process.cwd(), "downloads");
   await fs.mkdir(DOWNLOAD_DIR, { recursive: true });
-
-  const opts = cookieVar.trim().startsWith("{")
-    ? { cookiesObject: JSON.parse(cookieVar) }
-    : { cookies: cookieVar };
-
-  const client = await NotebookLMClient.connect(opts);
-  console.log("✅ Connected\n");
 
   const notebooks = await client.notebooks.list();
   if (!notebooks.length) {

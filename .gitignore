@@ -5,3 +5,4 @@ dist/
 .env
 coverage/
 downloads/
+storage_state.json.auth_profile/

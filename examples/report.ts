@@ -3,23 +3,11 @@ import * as path from "node:path";
 import { NotebookLMClient } from "../src/index.js";
 
 async function main() {
-  const cookieVar = process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
-
-  if (!cookieVar) {
-    console.error("❌ Please set NOTEBOOKLM_COOKIE in your environment variables or .env file.");
-    process.exit(1);
-  }
-
-  let opts = {};
-  if (cookieVar.trim().startsWith("{")) {
-    opts = { cookiesObject: JSON.parse(cookieVar) };
-  } else {
-    opts = { cookies: cookieVar };
-  }
-
   console.log("\n🔄 Connecting to NotebookLM...");
   try {
-    const client = await NotebookLMClient.connect(opts);
+    const client = await NotebookLMClient.connect({
+      cookiesFile: "storage_state.json",
+    });
     console.log("✅ Connected successfully!");
 
     console.log("\n📚 Fetching notebooks...");

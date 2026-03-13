@@ -1,31 +1,13 @@
 import { NotebookLMClient } from "../src/index.js";
 
 async function main() {
-  // 1. Read the cookie string from the environment variable (e.g. from .env file)
-  const cookieVar = process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
-
-  if (!cookieVar) {
-    console.error("❌ Please set NOTEBOOKLM_COOKIE in your environment variables or .env file.");
-    process.exit(1);
-  }
-
-  // 2. Prepare the connection options
-  // The SDK accepts different formats (plain string, parsed JSON object, etc.)
-  let opts = {};
-  if (cookieVar.trim().startsWith("{")) {
-    // If it looks like Playwright storage_state.json content
-    console.log("ℹ️  Parsing cookie from JSON format...");
-    opts = { cookiesObject: JSON.parse(cookieVar) };
-  } else {
-    // If it's a standard '; ' separated cookie string
-    console.log("ℹ️  Using plain cookie string...");
-    opts = { cookies: cookieVar };
-  }
-
   console.log("\n🔄 Connecting to NotebookLM...");
   try {
-    // 3. Connect to NotebookLM (fetches CSRF and session tokens)
-    const client = await NotebookLMClient.connect(opts);
+    // 1. Connect to NotebookLM
+    // Prioritizes storage_state.json if it exists, otherwise falls back to NOTEBOOKLM_COOKIE env var
+    const client = await NotebookLMClient.connect({
+      cookiesFile: "storage_state.json",
+    });
     console.log("✅ Connected successfully!");
 
     // 4. Use the SDK! List existing notebooks

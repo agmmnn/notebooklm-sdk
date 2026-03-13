@@ -1,15 +1,9 @@
 import { NotebookLMClient } from "../src/index.js";
 
 async function main() {
-  const cookieVar = process.env.NOTEBOOKLM_COOKIE || process.env.NOTEBOOKLM_COOKIES;
-  if (!cookieVar) {
-    console.error("❌ Please set NOTEBOOKLM_COOKIE in your .env file.");
-    process.exit(1);
-  }
-  const opts = cookieVar.trim().startsWith("{")
-    ? { cookiesObject: JSON.parse(cookieVar) }
-    : { cookies: cookieVar };
-  const client = await NotebookLMClient.connect(opts);
+  const client = await NotebookLMClient.connect({
+    cookiesFile: "storage_state.json",
+  });
   console.log("✅ Connected\n");
 
   const lang = await client.settings.getOutputLanguage();
