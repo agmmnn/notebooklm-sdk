@@ -1,5 +1,13 @@
 # notebooklm-sdk
 
+## 0.3.2
+
+### Patch Changes
+
+- e9a3e5b: feat: add artifacts.exportReport and artifacts.exportDataTable
+
+  Export a completed report to Google Docs or a data table to Google Sheets. Both methods return the URL of the created document.
+
 ## 0.3.1
 
 ### Patch Changes
