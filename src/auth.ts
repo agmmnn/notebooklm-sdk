@@ -130,7 +130,11 @@ export async function fetchTokens(
   const cookieHeader = buildCookieHeader(cookies);
 
   const response = await fetch(NOTEBOOKLM_URL, {
-    headers: { Cookie: cookieHeader },
+    headers: {
+      Cookie: cookieHeader,
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    },
     redirect: "follow",
   });
 
