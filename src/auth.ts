@@ -83,8 +83,8 @@ function extractCookiesFromStorageState(storageState: {
     const { domain, name, value } = cookie;
     if (!isAllowedDomain(domain) || !name) continue;
 
-    const isBase = domain === ".google.com";
-    if (!(name in cookies) || isBase) {
+    const isSpecific = domain.includes("notebook");
+    if (!(name in cookies) || isSpecific) {
       cookies[name] = value;
       domainTrack[name] = domain;
     }
@@ -99,18 +99,15 @@ function extractCookiesFromStorageState(storageState: {
 }
 
 function isAllowedDomain(domain: string): boolean {
-  if (
-    domain === ".google.com" ||
-    domain === "notebooklm.google.com" ||
-    domain === "notebook.google.com" ||
-    domain === ".googleusercontent.com"
-  ) {
-    return true;
-  }
-  if (domain.startsWith(".google.")) {
-    return true; // Allow all regional Google domains
-  }
-  return false;
+  const d = domain.startsWith(".") ? domain.slice(1) : domain;
+  return (
+    d === "google.com" ||
+    d.endsWith(".google.com") ||
+    d.startsWith("google.") ||
+    d.includes(".google.") ||
+    d === "googleusercontent.com" ||
+    d.endsWith(".googleusercontent.com")
+  );
 }
 
 export function buildCookieHeader(cookies: CookieMap): string {
