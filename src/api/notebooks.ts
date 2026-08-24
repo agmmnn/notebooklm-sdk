@@ -129,7 +129,7 @@ export class NotebooksAPI {
   }
 
   getShareUrl(notebookId: string, artifactId?: string): string {
-    const baseUrl = `https://notebooklm.google.com/notebook/${notebookId}`;
+    const baseUrl = `https://notebook.google.com/notebook/${notebookId}`;
     return artifactId ? `${baseUrl}?artifactId=${artifactId}` : baseUrl;
   }
 

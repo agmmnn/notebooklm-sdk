@@ -102,6 +102,7 @@ function isAllowedDomain(domain: string): boolean {
   if (
     domain === ".google.com" ||
     domain === "notebooklm.google.com" ||
+    domain === "notebook.google.com" ||
     domain === ".googleusercontent.com"
   ) {
     return true;
@@ -122,7 +123,7 @@ export function buildCookieHeader(cookies: CookieMap): string {
 // Token fetching
 // ---------------------------------------------------------------------------
 
-const NOTEBOOKLM_URL = "https://notebooklm.google.com/";
+const NOTEBOOKLM_URL = "https://notebook.google.com/";
 
 export async function fetchTokens(
   cookies: CookieMap,
@@ -130,7 +131,11 @@ export async function fetchTokens(
   const cookieHeader = buildCookieHeader(cookies);
 
   const response = await fetch(NOTEBOOKLM_URL, {
-    headers: { Cookie: cookieHeader },
+    headers: {
+      Cookie: cookieHeader,
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    },
     redirect: "follow",
   });
 
