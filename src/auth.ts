@@ -76,17 +76,24 @@ export function loadCookiesFromString(cookieStr: string): CookieMap {
 function extractCookiesFromStorageState(storageState: {
   cookies?: Array<{ name: string; value: string; domain: string }>;
 }): CookieMap {
+  const host = "notebook.google.com";
   const cookies: CookieMap = {};
-  const domainTrack: Record<string, string> = {};
 
   for (const cookie of storageState.cookies ?? []) {
     const { domain, name, value } = cookie;
-    if (!isAllowedDomain(domain) || !name) continue;
+    if (!name || !value || !domain) continue;
 
-    const isSpecific = domain.includes("notebook");
-    if (!(name in cookies) || isSpecific) {
-      cookies[name] = value;
-      domainTrack[name] = domain;
+    const cleanDomain = domain.startsWith(".") ? domain.slice(1) : domain;
+    const matchesHost =
+      host === cleanDomain ||
+      (cleanDomain.startsWith("google.") && host.endsWith("." + cleanDomain)) ||
+      (cleanDomain.includes(".google.") && host.endsWith("." + cleanDomain)) ||
+      (cleanDomain === "google.com" && host.endsWith("." + cleanDomain));
+
+    if (matchesHost) {
+      if (!(name in cookies) || cleanDomain === host) {
+        cookies[name] = value;
+      }
     }
   }
 
@@ -96,18 +103,6 @@ function extractCookiesFromStorageState(storageState: {
     );
   }
   return cookies;
-}
-
-function isAllowedDomain(domain: string): boolean {
-  const d = domain.startsWith(".") ? domain.slice(1) : domain;
-  return (
-    d === "google.com" ||
-    d.endsWith(".google.com") ||
-    d.startsWith("google.") ||
-    d.includes(".google.") ||
-    d === "googleusercontent.com" ||
-    d.endsWith(".googleusercontent.com")
-  );
 }
 
 export function buildCookieHeader(cookies: CookieMap): string {
