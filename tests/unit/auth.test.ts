@@ -27,23 +27,17 @@ describe("loadCookiesFromObject", () => {
     expect(result["HSID"]).toBe("def");
   });
 
-  it("prefers .google.com over regional domains", () => {
+  it("prefers notebook.google.com over .google.com", () => {
     const storage = {
       cookies: [
-        { name: "SID", value: "regional_sid", domain: ".google.com.sg" },
+        { name: "OSID", value: "base_osid", domain: ".google.com" },
+        { name: "OSID", value: "notebook_osid", domain: "notebook.google.com" },
         { name: "SID", value: "base_sid", domain: ".google.com" },
       ],
     };
     const result = loadCookiesFromObject(storage);
+    expect(result["OSID"]).toBe("notebook_osid");
     expect(result["SID"]).toBe("base_sid");
-  });
-
-  it("accepts regional Google domains", () => {
-    const storage = {
-      cookies: [{ name: "SID", value: "sid_val", domain: ".google.co.uk" }],
-    };
-    const result = loadCookiesFromObject(storage);
-    expect(result["SID"]).toBe("sid_val");
   });
 
   it("throws AuthError when SID is missing", () => {
@@ -53,15 +47,19 @@ describe("loadCookiesFromObject", () => {
     expect(() => loadCookiesFromObject(storage)).toThrow(AuthError);
   });
 
-  it("ignores non-Google domains", () => {
+  it("ignores non-matching domains", () => {
     const storage = {
       cookies: [
         { name: "SID", value: "abc", domain: ".google.com" },
         { name: "evil", value: "xyz", domain: ".evil.com" },
+        { name: "other_osid", value: "123", domain: "myaccount.google.com" },
+        { name: "old_osid", value: "456", domain: "notebooklm.google.com" },
       ],
     };
     const result = loadCookiesFromObject(storage);
     expect(result["evil"]).toBeUndefined();
+    expect(result["other_osid"]).toBeUndefined();
+    expect(result["old_osid"]).toBeUndefined();
   });
 });
 

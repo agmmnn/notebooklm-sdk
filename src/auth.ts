@@ -76,17 +76,24 @@ export function loadCookiesFromString(cookieStr: string): CookieMap {
 function extractCookiesFromStorageState(storageState: {
   cookies?: Array<{ name: string; value: string; domain: string }>;
 }): CookieMap {
+  const host = "notebook.google.com";
   const cookies: CookieMap = {};
-  const domainTrack: Record<string, string> = {};
 
   for (const cookie of storageState.cookies ?? []) {
     const { domain, name, value } = cookie;
-    if (!isAllowedDomain(domain) || !name) continue;
+    if (!name || !value || !domain) continue;
 
-    const isBase = domain === ".google.com";
-    if (!(name in cookies) || isBase) {
-      cookies[name] = value;
-      domainTrack[name] = domain;
+    const cleanDomain = domain.startsWith(".") ? domain.slice(1) : domain;
+    const matchesHost =
+      host === cleanDomain ||
+      (cleanDomain.startsWith("google.") && host.endsWith("." + cleanDomain)) ||
+      (cleanDomain.includes(".google.") && host.endsWith("." + cleanDomain)) ||
+      (cleanDomain === "google.com" && host.endsWith("." + cleanDomain));
+
+    if (matchesHost) {
+      if (!(name in cookies) || cleanDomain === host) {
+        cookies[name] = value;
+      }
     }
   }
 
@@ -96,20 +103,6 @@ function extractCookiesFromStorageState(storageState: {
     );
   }
   return cookies;
-}
-
-function isAllowedDomain(domain: string): boolean {
-  if (
-    domain === ".google.com" ||
-    domain === "notebooklm.google.com" ||
-    domain === ".googleusercontent.com"
-  ) {
-    return true;
-  }
-  if (domain.startsWith(".google.")) {
-    return true; // Allow all regional Google domains
-  }
-  return false;
 }
 
 export function buildCookieHeader(cookies: CookieMap): string {
@@ -122,7 +115,7 @@ export function buildCookieHeader(cookies: CookieMap): string {
 // Token fetching
 // ---------------------------------------------------------------------------
 
-const NOTEBOOKLM_URL = "https://notebooklm.google.com/";
+const NOTEBOOKLM_URL = "https://notebook.google.com/";
 
 export async function fetchTokens(
   cookies: CookieMap,
@@ -130,7 +123,11 @@ export async function fetchTokens(
   const cookieHeader = buildCookieHeader(cookies);
 
   const response = await fetch(NOTEBOOKLM_URL, {
-    headers: { Cookie: cookieHeader },
+    headers: {
+      Cookie: cookieHeader,
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    },
     redirect: "follow",
   });
 

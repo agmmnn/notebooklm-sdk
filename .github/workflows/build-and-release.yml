@@ -1,0 +1,51 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+      - fix-domain-notebook-google-com
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: bunx vitest run
+
+      - name: Build
+        run: bun run build
+
+      - name: Package tarball
+        run: |
+          npm pack
+          echo "PACKAGE_FILE=$(ls notebooklm-sdk-*.tgz)" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.3.5-patch2
+          name: "v0.3.5-patch2: Fix domain migration to notebook.google.com"
+          body: |
+            ## Changes
+            - Updated NotebookLM URL and endpoints from `notebooklm.google.com` to `notebook.google.com`.
+            - Added `notebook.google.com` to allowed cookie domains.
+            - Added browser User-Agent header in HTTP requests to prevent auth redirect issues.
+          files: |
+            ${{ env.PACKAGE_FILE }}
+            dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

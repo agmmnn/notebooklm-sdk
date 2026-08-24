@@ -26,7 +26,7 @@ export interface LoginOptions {
   headless?: boolean;
 }
 
-const NOTEBOOKLM_URL = "https://notebooklm.google.com/";
+const NOTEBOOKLM_URL = "https://notebook.google.com/";
 const GOOGLE_ACCOUNTS_URL = "https://accounts.google.com/";
 
 /**
@@ -84,7 +84,10 @@ export async function login(opts: LoginOptions = {}): Promise<{
     // We poll until the URL includes notebooklm.google.com and it's not a generic landing page
     await page.waitForURL(
       (url) => {
-        return url.hostname === "notebooklm.google.com" && !url.pathname.includes("/login");
+        return (
+          (url.hostname === "notebook.google.com" || url.hostname === "notebooklm.google.com") &&
+          !url.pathname.includes("/login")
+        );
       },
       { timeout: 0 },
     ); // No timeout, wait for user

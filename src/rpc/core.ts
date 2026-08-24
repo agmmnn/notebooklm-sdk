@@ -12,7 +12,7 @@ import {
 import { decodeResponse } from "./decoder.js";
 import { buildRequestBody, buildUrlParams, encodeRPCRequest } from "./encoder.js";
 
-const BATCHEXECUTE_URL = "https://notebooklm.google.com/_/LabsTailwindUi/data/batchexecute";
+const BATCHEXECUTE_URL = "https://notebook.google.com/_/LabsTailwindUi/data/batchexecute";
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 
@@ -58,6 +58,8 @@ export class RPCCore {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
           Cookie: this.auth.cookieHeader,
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
         },
         body,
         signal: controller.signal,

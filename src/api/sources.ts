@@ -7,7 +7,7 @@ import { SourceProcessingError, SourceTimeoutError } from "../types/errors.js";
 import type { Source, SourceFulltext, SourceGuide } from "../types/models.js";
 import { parseSource } from "../types/models.js";
 
-const UPLOAD_URL = "https://notebooklm.google.com/upload/_/";
+const UPLOAD_URL = "https://notebook.google.com/upload/_/";
 
 export interface AddSourceOptions {
   waitUntilReady?: boolean;
@@ -222,8 +222,8 @@ export class SourcesAPI {
         Accept: "*/*",
         "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         Cookie: this.auth.cookieHeader,
-        Origin: "https://notebooklm.google.com",
-        Referer: "https://notebooklm.google.com/",
+        Origin: "https://notebook.google.com",
+        Referer: "https://notebook.google.com/",
         "x-goog-authuser": "0",
         "x-goog-upload-command": "start",
         "x-goog-upload-header-content-length": String(fileSize),
@@ -255,8 +255,8 @@ export class SourcesAPI {
         Accept: "*/*",
         "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
         Cookie: this.auth.cookieHeader,
-        Origin: "https://notebooklm.google.com",
-        Referer: "https://notebooklm.google.com/",
+        Origin: "https://notebook.google.com",
+        Referer: "https://notebook.google.com/",
         "X-Goog-Upload-Command": "upload, finalize",
         "X-Goog-Upload-Offset": "0",
       },
