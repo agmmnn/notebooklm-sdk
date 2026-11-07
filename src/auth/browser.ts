@@ -3,6 +3,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { type BrowserContext, chromium, type Page } from "playwright";
 import { type CookieMap, loadCookiesFromObject } from "../auth.js";
+import { NOTEBOOKLM_HOST, NOTEBOOKLM_LEGACY_HOST, NOTEBOOKLM_ORIGIN } from "../constants.js";
 
 /** Default directory for storing NotebookLM session files (~/.notebooklm). */
 export const DEFAULT_SESSION_DIR = join(homedir(), ".notebooklm");
@@ -26,16 +27,49 @@ export interface LoginOptions {
   headless?: boolean;
 }
 
-const NOTEBOOKLM_URL = "https://notebooklm.google.com/";
+const NOTEBOOKLM_URL = `${NOTEBOOKLM_ORIGIN}/`;
 const GOOGLE_ACCOUNTS_URL = "https://accounts.google.com/";
+
+export function hasCsrfToken(html: string): boolean {
+  return /"SNlM0e"\s*:\s*"([^"]+)"/.test(html);
+}
+
+function isNotebookLmHost(hostname: string): boolean {
+  return hostname === NOTEBOOKLM_HOST || hostname === NOTEBOOKLM_LEGACY_HOST;
+}
+
+async function isAuthenticatedNotebookLm(page: Page): Promise<boolean> {
+  const currentUrl = page.url();
+  try {
+    const url = new URL(currentUrl);
+    if (!isNotebookLmHost(url.hostname)) {
+      return false;
+    }
+    if (url.pathname.includes("/login") || url.pathname.includes("/trynow")) {
+      return false;
+    }
+    const hasSignInBtn = await page
+      .locator(".landing-header-signin, a[href*='/login']")
+      .first()
+      .isVisible()
+      .catch(() => false);
+    if (hasSignInBtn) {
+      return false;
+    }
+    const html = await page.content().catch(() => "");
+    return hasCsrfToken(html);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Log in to NotebookLM via a headful browser window.
  *
  * Flow:
  * 1. Opens browser to NotebookLM.
- * 2. If already logged in (via persistFolder), it proceeds.
- * 3. If not, it waits for the user to reach the home page.
+ * 2. If already logged in (via persistFolder with valid session), it proceeds.
+ * 3. If signed out, guides user to Google account picker/sign in and waits until authenticated.
  * 4. Captures cookies and returns them.
  */
 export async function login(opts: LoginOptions = {}): Promise<{
@@ -61,49 +95,90 @@ export async function login(opts: LoginOptions = {}): Promise<{
     mkdirSync(DEFAULT_SESSION_DIR, { recursive: true });
   }
 
-  let context: BrowserContext;
-
   const launchOptions = {
     headless,
     args: ["--disable-blink-features=AutomationControlled"],
   };
 
-  context = await chromium.launchPersistentContext(persistFolder, {
+  const context: BrowserContext = await chromium.launchPersistentContext(persistFolder, {
     ...launchOptions,
     channel: browserType === "msedge" ? "msedge" : undefined,
   });
 
-  const page = context.pages()[0] || (await context.newPage());
-  await page.goto(NOTEBOOKLM_URL);
+  try {
+    const page = context.pages()[0] || (await context.newPage());
+    await page.goto(NOTEBOOKLM_URL);
 
-  // Check if we are on the login page
-  if (page.url().includes("accounts.google.com")) {
-    console.log("Please log in to Google in the browser window...");
+    // If not already authenticated, wait for the user to complete Google sign-in
+    if (!(await isAuthenticatedNotebookLm(page))) {
+      console.log("Please log in to Google in the browser window...");
 
-    // Wait for navigation back to NotebookLM or successful login indicator
-    // We poll until the URL includes notebooklm.google.com and it's not a generic landing page
-    await page.waitForURL(
-      (url) => {
-        return url.hostname === "notebooklm.google.com" && !url.pathname.includes("/login");
-      },
-      { timeout: 0 },
-    ); // No timeout, wait for user
+      // Optional UX: click the landing page Sign-in link so the user lands on the account picker
+      if (!page.url().includes("accounts.google.com")) {
+        try {
+          const signInButton = page.locator(".landing-header-signin, a[href*='/login']").first();
+          if (await signInButton.isVisible({ timeout: 2000 })) {
+            await signInButton.click().catch(() => {});
+          }
+        } catch {
+          // Ignore if clicking fails; user can proceed manually in the browser window
+        }
+      }
+
+      // Wait until the user completes login and reaches an authenticated NotebookLM page
+      while (true) {
+        await page.waitForURL(
+          (url) => {
+            return (
+              isNotebookLmHost(url.hostname) &&
+              !url.hostname.includes("accounts.google.com") &&
+              !url.pathname.includes("/login") &&
+              !url.pathname.includes("/trynow")
+            );
+          },
+          { timeout: 0 },
+        );
+
+        await page.waitForLoadState("domcontentloaded").catch(() => {});
+        const html = await page.content().catch(() => "");
+        if (hasCsrfToken(html)) {
+          break;
+        }
+
+        await page.waitForTimeout(1000);
+        const retryHtml = await page.content().catch(() => "");
+        if (hasCsrfToken(retryHtml)) {
+          break;
+        }
+
+        await page.waitForTimeout(1000);
+      }
+    }
+
+    // Ensure we are fully loaded on the accounts domain too to capture those cookies
+    await page.goto(GOOGLE_ACCOUNTS_URL, { waitUntil: "load" });
+    await page.goto(NOTEBOOKLM_URL, { waitUntil: "load" });
+    await page.waitForLoadState("domcontentloaded").catch(() => {});
+
+    // Verify authenticated state before saving session
+    const finalHtml = await page.content();
+    if (!hasCsrfToken(finalHtml)) {
+      throw new Error(
+        "Login failed: signed-out landing / login not completed. CSRF token (SNlM0e) not found in NotebookLM page HTML.",
+      );
+    }
+
+    const storageState = await context.storageState();
+    const cookies = loadCookiesFromObject(storageState as any);
+
+    return {
+      cookies,
+      storageState,
+      cookieHeader: Object.entries(cookies)
+        .map(([k, v]) => `${k}=${v}`)
+        .join("; "),
+    };
+  } finally {
+    await context.close().catch(() => {});
   }
-
-  // Ensure we are fully loaded on the accounts domain too to capture those cookies
-  await page.goto(GOOGLE_ACCOUNTS_URL, { waitUntil: "load" });
-  await page.goto(NOTEBOOKLM_URL, { waitUntil: "load" });
-
-  const storageState = await context.storageState();
-  const cookies = loadCookiesFromObject(storageState as any);
-
-  await context.close();
-
-  return {
-    cookies,
-    storageState,
-    cookieHeader: Object.entries(cookies)
-      .map(([k, v]) => `${k}=${v}`)
-      .join("; "),
-  };
 }

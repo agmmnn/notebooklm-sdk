@@ -1,12 +1,12 @@
 import type { AuthTokens } from "../auth.js";
+import { NOTEBOOKLM_ORIGIN } from "../constants.js";
 import type { RPCCore } from "../rpc/core.js";
 import type { ChatGoalValue, ChatModeValue, ChatResponseLengthValue } from "../types/enums.js";
 import { ChatGoal, ChatResponseLength, chatModeToParams, RPCMethod } from "../types/enums.js";
 import { ChatError } from "../types/errors.js";
 import type { AskResult, ChatReference, ConversationTurn } from "../types/models.js";
 
-const QUERY_URL =
-  "https://notebooklm.google.com/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed";
+const QUERY_URL = `${NOTEBOOKLM_ORIGIN}/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed`;
 
 const DEFAULT_BL = "boq_labs-tailwind-frontend_20260301.03_p0";
 

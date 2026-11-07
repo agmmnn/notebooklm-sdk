@@ -1,3 +1,4 @@
+import { NOTEBOOKLM_ORIGIN } from "../constants.js";
 import type { RPCCore } from "../rpc/core.js";
 import type {
   ShareAccessValue,
@@ -136,7 +137,7 @@ function parseShareStatus(data: unknown[], notebookId: string): ShareStatus {
 
   const isPublic = Array.isArray(data[1]) && (data[1] as unknown[])[0] === true;
   const access = isPublic ? ShareAccess.ANYONE_WITH_LINK : ShareAccess.RESTRICTED;
-  const shareUrl = isPublic ? `https://notebooklm.google.com/notebook/${notebookId}` : null;
+  const shareUrl = isPublic ? `${NOTEBOOKLM_ORIGIN}/notebook/${notebookId}` : null;
 
   return {
     notebookId,

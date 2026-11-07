@@ -55,6 +55,9 @@ describe("ChatAPI", () => {
     expect(api.getCachedTurns("server-conv")).toEqual([
       { query: "Question?", answer: "Answer", turnNumber: 1 },
     ]);
+    expect(String(vi.mocked(fetch).mock.calls[0]?.[0])).toContain(
+      "https://notebook.google.com/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed",
+    );
     vi.unstubAllGlobals();
   });
 

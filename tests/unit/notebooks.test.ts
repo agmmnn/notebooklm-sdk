@@ -93,15 +93,15 @@ describe("NotebooksAPI", () => {
     vi.mocked(fetch).mockResolvedValue(new Response("", { status: 200 }));
     await expect(api.share("test-id", true)).resolves.toEqual({
       public: true,
-      url: "https://notebooklm.google.com/notebook/test-id",
+      url: "https://notebook.google.com/notebook/test-id",
       artifactId: null,
     });
   });
 
   it("getShareUrl() returns notebook or artifact URLs", () => {
-    expect(api.getShareUrl("nb-id")).toBe("https://notebooklm.google.com/notebook/nb-id");
+    expect(api.getShareUrl("nb-id")).toBe("https://notebook.google.com/notebook/nb-id");
     expect(api.getShareUrl("nb-id", "art-id")).toBe(
-      "https://notebooklm.google.com/notebook/nb-id?artifactId=art-id",
+      "https://notebook.google.com/notebook/nb-id?artifactId=art-id",
     );
   });
 

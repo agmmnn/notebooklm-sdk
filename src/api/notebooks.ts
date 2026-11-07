@@ -1,3 +1,4 @@
+import { NOTEBOOKLM_ORIGIN } from "../constants.js";
 import type { RPCCore } from "../rpc/core.js";
 import { RPCMethod } from "../types/enums.js";
 import type {
@@ -129,7 +130,7 @@ export class NotebooksAPI {
   }
 
   getShareUrl(notebookId: string, artifactId?: string): string {
-    const baseUrl = `https://notebooklm.google.com/notebook/${notebookId}`;
+    const baseUrl = `${NOTEBOOKLM_ORIGIN}/notebook/${notebookId}`;
     return artifactId ? `${baseUrl}?artifactId=${artifactId}` : baseUrl;
   }
 

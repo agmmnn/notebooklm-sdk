@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { NOTEBOOKLM_HOST, NOTEBOOKLM_LEGACY_HOST, NOTEBOOKLM_ORIGIN } from "./constants.js";
 import { AuthError } from "./types/errors.js";
 
 /** Default session file written by `npx notebooklm-sdk login`. */
@@ -84,7 +85,9 @@ function extractCookiesFromStorageState(storageState: {
     if (!isAllowedDomain(domain) || !name) continue;
 
     const isBase = domain === ".google.com";
-    if (!(name in cookies) || isBase) {
+    const isCurrentHost = domain === NOTEBOOKLM_HOST;
+    const existingDomain = domainTrack[name];
+    if (!(name in cookies) || isBase || (isCurrentHost && existingDomain !== ".google.com")) {
       cookies[name] = value;
       domainTrack[name] = domain;
     }
@@ -101,7 +104,8 @@ function extractCookiesFromStorageState(storageState: {
 function isAllowedDomain(domain: string): boolean {
   if (
     domain === ".google.com" ||
-    domain === "notebooklm.google.com" ||
+    domain === NOTEBOOKLM_HOST ||
+    domain === NOTEBOOKLM_LEGACY_HOST ||
     domain === ".googleusercontent.com"
   ) {
     return true;
@@ -122,7 +126,7 @@ export function buildCookieHeader(cookies: CookieMap): string {
 // Token fetching
 // ---------------------------------------------------------------------------
 
-const NOTEBOOKLM_URL = "https://notebooklm.google.com/";
+const NOTEBOOKLM_URL = `${NOTEBOOKLM_ORIGIN}/`;
 
 export async function fetchTokens(
   cookies: CookieMap,

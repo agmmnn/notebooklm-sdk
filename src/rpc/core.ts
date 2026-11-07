@@ -1,4 +1,5 @@
 import type { AuthTokens } from "../auth.js";
+import { NOTEBOOKLM_ORIGIN } from "../constants.js";
 import type { RPCMethodId } from "../types/enums.js";
 import {
   AuthError,
@@ -12,7 +13,7 @@ import {
 import { decodeResponse } from "./decoder.js";
 import { buildRequestBody, buildUrlParams, encodeRPCRequest } from "./encoder.js";
 
-const BATCHEXECUTE_URL = "https://notebooklm.google.com/_/LabsTailwindUi/data/batchexecute";
+const BATCHEXECUTE_URL = `${NOTEBOOKLM_ORIGIN}/_/LabsTailwindUi/data/batchexecute`;
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 

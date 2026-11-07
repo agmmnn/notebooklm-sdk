@@ -31,6 +31,9 @@ describe("RPCCore auth retry", () => {
 
     expect(refreshAuth).toHaveBeenCalledTimes(1);
     expect(result).toEqual([["ok"]]);
+    expect(String(vi.mocked(fetch).mock.calls[0]?.[0])).toContain(
+      "https://notebook.google.com/_/LabsTailwindUi/data/batchexecute",
+    );
     vi.unstubAllGlobals();
   });
 });

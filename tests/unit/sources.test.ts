@@ -91,6 +91,17 @@ describe("SourcesAPI", () => {
     const buf = Buffer.from("hello world");
     const src = await api.addFileBuffer("nb-id", buf, "test.txt", "text/plain");
     expect(src).toHaveProperty("id");
+    expect(String(vi.mocked(fetch).mock.calls[1]?.[0])).toContain(
+      "https://notebook.google.com/upload/_/",
+    );
+    expect(vi.mocked(fetch).mock.calls[1]?.[1]).toEqual(
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Origin: "https://notebook.google.com",
+          Referer: "https://notebook.google.com/",
+        }),
+      }),
+    );
   });
 
   it("delete() succeeds", async () => {
